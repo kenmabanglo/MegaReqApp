@@ -1,0 +1,19 @@
+
+<table-widget 
+[tableData]="users"
+[tableColumns]="tableColumns"
+[totalItems]="total"
+[isFilterable]="true"  
+[isPageable]="true"
+[paginationSizes]="[10,20,30]"
+[defaultPageSize]="limit"
+(search)="filterData($event)"
+(branch)="filterBranch($event)"
+(clearBt)="clearSearch($event)" 
+(assign)="assignBranch($event)"
+(changepass)="changePass($event)"
+(update)="updateUser($event)" 
+(page)="pageEvent = $event; onPaginateChange($event)"
+[status]="status"
+>
+</table-widget>

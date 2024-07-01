@@ -1,0 +1,23 @@
+.talent-form-request {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 5px;
+    
+    mat-form-field:not(.full-width) {
+        flex: 1 calc(100% / 3 - 4px);
+    }
+    
+    .request-form-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        width: 100%;
+    }
+
+    .request-form-actions button {
+        flex: 33%;
+    }
+}

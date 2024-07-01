@@ -1,0 +1,591 @@
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { LabelColors, LabelStatusColors, LabelStatusColorsBG, StatusIcons } from 'src/app/core/constants/_label_colors';
+import { DivisionMaster, PaginatedResponse, User } from '../../interface';
+import requestTypes from 'src/app/core/data/request-type-master.json';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { AuthenticationService } from 'src/app/core/service';
+import { RequestService, NotificationService, ConfirmDialogPopupService, UserService, ViewMasterService } from '../../service';
+import { debounceTime, distinctUntilChanged, fromEvent, map, Observable, startWith, tap } from 'rxjs';
+import { ApproveRequestComponent } from '../approve-request/approve-request.component';
+// import { ModalWrapperComponent } from '../modal-wrapper/modal-wrapper.component';
+import { RsFormComponent } from '../forms-viewer-modal/rs-form/rs-form.component';
+import { RTOFormComponent } from '../forms-viewer-modal/rto-form/rto-form.component';
+import { AdbFormComponent } from '../forms-viewer-modal/adb-form/adb-form.component';
+import { FlFormComponent, RfbComponent, RfpFormComponent } from '../forms-viewer-modal';
+import { RfsComponent } from '../forms-viewer-modal/rfs/rfs.component';
+import { RfaComponent } from '../forms-viewer-modal/rfa/rfa.component';
+import { FormControl } from '@angular/forms';
+//import branchesJson from 'src/app/core/data/branches.json';
+
+@Component({
+  selector: 'app-request-list-table',
+  templateUrl: './request-list-table.component.html',
+  styleUrls: ['./request-list-table.component.scss']
+})
+export class RequestListTableComponent implements OnInit, AfterViewInit {
+  // columnsToDisplay = ['reqNo','date','requestor','reqType','objective','dateRequired', 'actions'];
+ 
+  @Input('pageType') pageType: string;
+  @Input('search') search: boolean = false;
+  @Input('columns') columnsToDisplay: string[]; 
+  data: any;
+
+  @Input() set dataset(data) {
+    if (data !== undefined) {
+      this.setDataSource(data);
+    }
+  }
+
+  //accessTypesA
+  @Input() set accessTypes(data) { 
+    this.setRequestTypes(data); 
+  }
+
+  hiddenClose = true; 
+
+  @Input('page') page = 1;
+  @Input('limit') limit = 10;
+
+  @Output() dataFilter = new EventEmitter<any>();  
+
+  filter = '';
+  searchKey: string = "";
+  isLoading = true;
+  totalPage: number; 
+  pageEvent: PageEvent;
+  req = '';
+
+  public dataSource: MatTableDataSource<PaginatedResponse> = null; 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('search') input: ElementRef;
+  @ViewChild('searchB') sbInput: ElementRef;
+  user: User;
+
+  public labelColors =  LabelColors;
+  public statColors =  LabelStatusColorsBG;
+  public statIcons =  StatusIcons;
+  details: any;
+  request_types: any[]=[];
+  rtypes:any[]=[];
+  dm=false;
+
+  //branches:DivisionMaster[] = branchesJson;   
+  branches:DivisionMaster[] = [];   
+  filteredOptions: Observable<DivisionMaster[]>;
+  searchBranch = new FormControl<string | DivisionMaster>('');
+  hiddenCloseBranch: boolean = true;
+  
+  constructor(
+    private _requestData: RequestService,
+    private userService: UserService,
+    private auth: AuthenticationService, 
+    public dialog: MatDialog,
+    private notif: NotificationService,
+    private confirmDialog: ConfirmDialogPopupService,
+    private vwMaster: ViewMasterService
+  ) { 
+    
+    this.auth.user.subscribe(x => this.user = x);
+    if (this.userService.isDM()) this.dm = true;
+    this._requestData.listen().subscribe((m:any)=>{ 
+      this.initDataSource();
+    });
+ 
+  }
+
+  ngOnInit() { 
+    this.dataSource = new MatTableDataSource();
+    this.dataSource.paginator = this.paginator;
+
+    
+    if (this.pageType == 'viewer' || this.pageType == 'approval-history-closed')
+    {
+      this.setUserBranches();
+      
+      this.getViewerAccess();
+    }
+    else {
+      this.setUserBranches();
+      this.initDataSource();
+    }
+  
+  
+
+  }
+
+  ngAfterViewInit() {
+   
+
+      // server-side search
+      if (this.input) {
+        fromEvent(this.input.nativeElement,'keyup')
+        .pipe(
+            debounceTime(150),
+            distinctUntilChanged(),
+            tap(() => {
+              this.hiddenClose = false;  
+              this.initDataSource(1,10, this.input.nativeElement.value);
+            })
+        )
+        .subscribe();
+      }
+      
+  }
+  
+
+  setRequestTypes(data) { 
+ 
+      // if (this.pageType!='viewer') {
+      if (data !== undefined) {
+        this.request_types = requestTypes.filter(x=>data.includes(x.requestTypeCode));
+        this.rtypes = data;
+      }
+      else {
+        this.request_types = requestTypes; 
+      }
+    //}
+  }
+
+  getViewerAccess() {
+    this.userService.getUserRights(this.user.userName)
+    .subscribe((data)=> {
+      let datas = data.filter(x=>x!='VA').map(x=>x.slice(2));
+
+      this.request_types = requestTypes.filter(x=>datas.includes(x.requestTypeCode));
+       
+      this.rtypes = datas;
+      
+     this.initDataSource();
+    });  
+  }
+
+  setDataSource(data) {
+    if (data !== undefined) {
+       this.isLoading = false;
+       let datas = data.page.data;
+
+       let approver = 0; let approved = 0; let rejects = 0;
+       let approved_date = '';
+       Object.keys(datas).forEach((val,key)=> {
+       
+        //console.log(data);
+        for (let i = 1; i <= 3; i++) {
+          let d = datas[key]; 
+         // console.log( datas[key]);
+          let r = d['approver'+i]?.trim();
+          const a = d['approved'+i]; //Y
+          const d8 = d['approvedDate'+i]; 
+          let c; let s;
+          // console.log('r',r);
+          if (r != null && r != '') {
+            //approver+=1; 
+            if (a == 'Y') { 
+              // approved +=1;
+              approved = 1;
+              approved_date = new Date(d8).toLocaleDateString("en-US");
+            }
+            else if (a == 'N') { 
+              // rejects+=1;
+              approved = 0; rejects = 1;
+            }
+            else {
+              approved = 0; 
+            }
+            
+            // console.log(approved);//1
+          }
+        }
+        
+        // console.log(approved);
+        if (approved == 1) {
+          datas[key].col = 'label-green';
+          datas[key].status = 'Approved';
+        }
+        else if (approved == 0 && rejects == 0) {
+          datas[key].col = 'label-blue';
+          datas[key].status = 'Pending';
+        }
+        else if (rejects > 0) {
+          datas[key].col = 'label-red';
+          datas[key].status = 'Rejected';
+        }
+
+        datas[key].approvedDate = approved_date;
+      });
+      // console.log(approved_date);
+      this.totalPage = data.page.total;
+      this.dataSource = data.page.data;
+      this.dataSource.paginator = this.paginator;   
+      
+    } 
+  }
+
+  convertTZ(date) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: "Asia/Manila"})).toISOString();   
+  }
+
+  initDataSource(page=1, limit=10, search="", branchCode="") {
+    this.isLoading = true;
+    let req = this.req;
+   // branchCode = this.branches.filter(x=>x.divisionCode!='NO BRANCH').map(x=>x.divisionCode).join("','");
+
+    //console.log(this.searchBranch.value['divisionCode']);
+    if(this.searchBranch.value['divisionCode']) {
+      branchCode = this.searchBranch.value['divisionCode'];
+    } 
+   
+    let requestTypes = this.rtypes.join("','");
+    //console.log(page,limit,search,req,branchCode,requestTypes);
+    this.dataFilter.emit({page,limit,search,req,branchCode,requestTypes});
+  }
+
+  setUserBranches() {
+
+      this.vwMaster.divisionMaster()
+      .subscribe({
+        next: (res) => {
+          this.branches = res;
+            
+            //double alpha
+            if (this.user.userName == 'joana') {
+              this.branches = this.branches.filter(x=>['ILA','VAL','CAU','CPN'].includes(x.divisionCode));
+            }
+            // else if(this.user.userName == 'Deferred') {
+            //   this.branches = this.branches.filter(x=>!['ILA','VAL','CAU','CPN'].includes(x.divisionCode));
+            // }
+            else {
+              this.branches = this.branches;
+            }
+            this.getBranches();
+      
+        },
+        error: (err) => {
+          this.notif.error(err.message);
+        }
+      });
+ 
+  }
+
+  getBranches() {
+        var exist = this.branches.filter(x=>x.divisionCode == 'NO BRANCH');
+        if (exist.length == 0) {
+          const nobranch = {
+            divisionName: 'NO BRANCH',
+            divisionCode:'NO BRANCH',
+            companyCode: ''
+           };
+           
+           this.branches.unshift(nobranch); 
+        }
+
+      /* Ken - Add MacAire to Branches - 6/22/2024 */
+      //const macAire = { divisionName: 'MacAire', branchCode: 'MCR' };
+      //this.branches.push(macAire);
+      //console.log(this.branches);
+       
+       Object.keys(this.branches).forEach((key: string)=> {
+        const divName = this.branches[key]['divisionName'];
+         
+        //this.branches[key]['divisionName'] = divName.replace(/TARLAC MAC ENTERPRISES, INC.|TARLAC MAC ENTERPRISES - |1st MEGASAVER - |1st MEGASAVER |(|)/gi,"");
+        // Ken - 6/25/2024
+         this.branches[key]['divisionName'] = divName.replace(/TARLAC MAC ENTERPRISES, INC.|TARLAC MAC ENTERPRISES - |1st MEGASAVER - |1st MEGASAVER |Cooling Industries Corp./gi, "");
+
+        this.searchBranch.setValue("",{emitEvent: true});
+
+        this.filteredOptions = this.searchBranch.valueChanges.pipe(
+          startWith(''),
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.divisionName;
+            return name ? this._filter(name as string) : this.branches.slice();
+          }),
+        );
+      
+      });
+  }
+
+  displayFn(branch: DivisionMaster): string | undefined {
+    return branch && branch.divisionName ? branch.divisionName : undefined;
+  }
+  
+  private _filter(name: string): DivisionMaster[] {
+    const filterValue = name.toLowerCase();
+    return this.branches.filter(option => option.divisionName.toLowerCase().includes(filterValue));
+  }
+
+  applyFilterBranch(event) {  
+    //console.log(event);
+    let filterValue;
+    if (event.type == "input") {
+      filterValue = (event.target as HTMLInputElement).value;
+    }
+    else {
+      filterValue = event.option.value.divisionCode;
+    }
+   
+    this.hiddenCloseBranch = false;  
+    this.initDataSource(1,10,"",filterValue);
+  }
+
+  clearSearchBranch() {
+    const input = this.sbInput.nativeElement.value;
+    if (input != "") {
+      this.sbInput.nativeElement.value = "";
+      this.hiddenCloseBranch = true;
+      this.searchBranch.setValue("",{emitEvent: true});
+      this.initDataSource();
+    }  
+   }
+
+  onPaginateChange(event: PageEvent) {
+    console.log(event);
+    let page = event.pageIndex;
+    let size = event.pageSize;
+  
+    page = page + 1;
+  
+    this.initDataSource(page, size);
+  } 
+
+  clearSearch() {
+    const input = this.input.nativeElement.value;
+    if (input != "") {
+      this.input.nativeElement.value = "";
+      this.hiddenClose = true;
+      this.initDataSource();
+    }  
+  }  
+
+
+
+  viewRequest(row) {
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = '100%';
+  
+    const type = this.request_types
+    .filter(t=>t.requestTypeCode == row.requestTypeCode.trim())
+    .map(t => t['requestTypeName']);
+   console.log(this.request_types);
+    dialogConfig.data = {
+      title: type,
+      requestTypeCode: row.requestTypeCode,
+      requestNo: row.requestNo,
+      branchCode: row.branchCode,
+      status: row.status,
+      from: this.pageType
+    };
+ 
+    dialogConfig.panelClass = ['request-form-modal','modal-table-pane'];
+    
+    if (row.requestTypeCode.trim() == 'RS') {
+      const dialogRef = this.dialog.open(
+        RsFormComponent, dialogConfig
+      );
+    } 
+    else if (row.requestTypeCode == 'RTO') {
+      const dialogRef = this.dialog.open(
+        RTOFormComponent, dialogConfig
+      );
+    }
+    else if (row.requestTypeCode == 'ADB') {
+      const dialogRef = this.dialog.open(
+        AdbFormComponent, dialogConfig
+      );
+    }
+    else if (row.requestTypeCode == 'RFB') {
+      const dialogRef = this.dialog.open(
+        RfbComponent, dialogConfig
+      );
+    }
+    else if (row.requestTypeCode == 'RFP') {
+      const dialogRef = this.dialog.open(
+        RfpFormComponent, dialogConfig
+      );
+    }
+    else if (row.requestTypeCode == 'RFS') {
+      const dialogRef = this.dialog.open(
+        RfsComponent, dialogConfig
+      );
+    }
+    else if (row.requestTypeCode == 'RFA') {
+      const dialogRef = this.dialog.open(
+        RfaComponent, dialogConfig
+      );
+    }
+    else if (row.requestTypeCode.trim() == 'FL') {
+      const dialogRef = this.dialog.open(
+        FlFormComponent, dialogConfig
+      );
+    }
+  }
+
+  approveRequest(row) { 
+   //console.log(row);
+    let last_approver; let current_approver;
+    for (let i = 1; i <= 5; i++) {
+      const app = row['approver'+i];
+      if (app && app.trim() == this.user.userName) {
+        current_approver = i;
+      }
+       // console.log('current_approver: ',i);
+      if (row['approver'+i] !== null) {
+        last_approver = i;
+      } else {
+        break;
+      }
+      //console.log('last_approver',last_approver);
+    }   
+
+    const dialogConfig = new MatDialogConfig(); 
+    dialogConfig.width = '100%';
+    dialogConfig.data = {
+      approver: this.user.userName.trim(),
+      type: row.requestTypeCode,
+      rn: row.requestNo,
+      branchCode: row.branchCode,
+      approve: true,
+      // approverNum: last_approver + 1,
+      approverNum: current_approver,
+      requestTypeCode: row.requestTypeCode,
+      approverPosition: this.user.positionName,
+      amount: row.requestTypeCode == 'ADB'? row.estimatedAmount: row.extendedAmount
+    };
+    dialogConfig.panelClass = ['modal-table-pane'];
+  
+    const dialogRef = this.dialog.open(
+      ApproveRequestComponent, dialogConfig
+    );
+  
+    dialogRef.afterClosed().subscribe(result => {  
+      if (result.ok) {
+        var datas = { 
+          requestNo: row.requestNo,
+          branchCode: row.branchCode,
+          requestTypeCode: row.requestTypeCode,
+          recommendation: result.recommendation !== ''? (result.recommendation + ' - ' + this.user.userName) : '',
+          nextApprover: result.next_approver,
+          nextApproverNum: last_approver + 1
+        }  
+        datas['approver'+(last_approver)] = this.user.userName;
+        datas['approved'+(last_approver)] = 'Y';
+        datas['approver'+(last_approver + 1)] = result.next_approver;
+
+        // // add kaycee as last approver sa rfp
+        // if (row.requestTypeCode == "RFP" && row.isReferral == "Y" && result.finalApprover) {
+        //   datas['approver'+(last_approver + 1)] = "Deferred";
+        // }
+
+        // console.log(datas);
+        this.saveRequest(datas);
+      }
+    });
+  
+  }
+  
+  closeRequest(row) {
+    this.confirmDialog.openConfirmDialog('Are you sure you want to CLOSE this RFP#'+ row.requestNo + ' request?')
+  .afterClosed().subscribe(close => {
+    if(close) {  
+      const datas = {
+        requestNo: row.requestNo,
+        branchCode: row.branchCode,
+        requestTypeCode: row.requestTypeCode, 
+        closed: 'Y',
+        updatedBy: this.user.userName
+      } 
+
+      this._requestData.closedRequest(datas)
+      .subscribe(
+        {
+          next: (data) => {
+            if (data.responseCode == 1) {
+              this.notif.success(data.responseMessage);
+              this._requestData.filter('ApprovedRequest');
+            }
+            else {
+              var error = data.responseMessage != "" ? data.responseMessage : (data.dataSet.join("; "));
+              this.notif.error(error);
+            }
+          },
+          error: (err) => {
+            var error = error.responseMessage + (error.dataSet != null? error.dataSet.join("; ") : '');
+            this.notif.error(error);
+          }
+        }
+      )
+    }
+  });
+  }
+
+  rejectRequest(row) {
+    let approver_num;
+    for (let i = 1; i <= 5; i++) {
+      let app = row['approver'+i];
+      // console.log(i,app.trim(), this.user.userName);
+      if (app != null && app.trim() == this.user.userName) {
+        approver_num = i;
+      }
+      else {
+        break;
+      }
+    }     
+    const dialogConfig = new MatDialogConfig(); 
+    dialogConfig.width = '100%';
+    dialogConfig.panelClass = ['modal-table-pane'];
+    dialogConfig.data = {
+      type: row.requestTypeCode,
+      rn: row.requestNo,
+      approve: false
+    };
+    
+    const dialogRef = this.dialog.open(
+      ApproveRequestComponent, dialogConfig
+      );
+  
+    dialogRef.afterClosed().subscribe(result => {  
+      if (result.ok) {
+
+        const datas = {
+          approver: this.user.userName, 
+          requestNo: row.requestNo,
+          branchCode: row.branchCode,
+          requestTypeCode: row.requestTypeCode,
+          recommendation: result.recommendation,
+          reqType: row.requestType,
+          approved: 'N',
+        } 
+
+        datas['approved'+approver_num] = 'N';
+        datas['approver'+approver_num] = this.user.userName;
+
+        this.saveRequest(datas);
+      }
+    });
+  }
+
+  saveRequest(datas) {
+    this._requestData.approveRequest(datas)
+      .subscribe(
+        {
+          next: (data) => {
+            if (data.responseCode == 1) {
+              this.notif.success(data.responseMessage);
+              this._requestData.filter('ApprovedRequest');
+            }
+            else {
+              var error = data.responseMessage != "" ? data.responseMessage : (data.dataSet.join("; "));
+              this.notif.error(error);
+            }
+          },
+          error: (err) => {
+            var error = error.responseMessage + (error.dataSet != null? error.dataSet.join("; ") : '');
+            this.notif.error(error);
+          }
+        }
+      ); 
+   }
+}

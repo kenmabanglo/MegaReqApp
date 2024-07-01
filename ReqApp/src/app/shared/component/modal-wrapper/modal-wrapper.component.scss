@@ -1,0 +1,56 @@
+// MODAL CSS
+
+.modal-container {
+    .close-modal-button {
+        right: -10px;
+        float: right;
+        top: -5px;
+    }
+    mat-dialog-actions {
+        padding-top: 10px;
+        border-top: 1px solid rgba(128, 128, 128, 0.168627451);
+        margin-top: 0;
+    }
+    mat-dialog-content {
+        overflow: auto;
+        max-height: calc(100vh - 142px) !important;
+        width: 100% !important;
+    }
+    .modal-header {
+        padding-bottom: 10px;
+        border-bottom: 1px solid #8080802b;
+        margin-bottom: 20px;
+    }
+
+    .mat-dialog-title {
+        display: inline-block !important;
+    }
+    .mat-dialog-header > div {
+        width: calc(100% - 150px);
+    }
+    .mat-form-field-appearance-outline .mat-form-field-infix {
+        padding: 0.3em 0 0.3em 0 !important;
+    }
+    .modal-header .label-status {
+        right: 50;
+        margin: 0px 10px;
+        font: 500 13px Roboto, "Helvetica Neue", sans-serif;
+        border-radius: 4px;
+    }
+   
+    
+}
+
+:host ::ng-deep .mat-form-field.full-width-field {
+    flex: 1 1 49% !important;
+}
+:host ::ng-deep textarea,input {
+    cursor: pointer !important;
+}
+.mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 0.5em 0 0.5em 0 !important;
+}
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    line-height: 30px !important;
+}
+

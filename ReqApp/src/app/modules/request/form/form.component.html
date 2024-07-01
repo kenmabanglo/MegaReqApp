@@ -1,0 +1,383 @@
+<form class="form-request" [formGroup]="requestForm" #ngForm="ngForm"
+    fxLayout="row wrap" fxFlex="100" fxLayoutAlign="flex-start start">
+
+    <!-- HEADERS SECTION upper-->
+    <ng-container formArrayName="headers">
+        
+        <!-- requestType -->
+        <ng-container *ngIf="!edit; else requestTypeDisabled;">
+            <mat-form-field>
+                <mat-label>Select Request Type</mat-label>
+        
+                <mat-select formControlName="requestTypeCode" [(value)]="req" [disabled]="edit"
+                (selectionChange)="rtypeOnChanges($event.value);">
+                    <mat-option value=''>None</mat-option> 
+        
+                    <mat-option *ngFor="let c of requestTypes; " [value]="c.requestTypeCode">
+                        {{c.requestTypeCode}} - {{c.requestTypeName }}
+                    </mat-option>
+        
+                </mat-select>  
+                
+                </mat-form-field>
+        </ng-container>
+
+        <ng-template #requestTypeDisabled>
+            <mat-form-field  appearance="fill">
+                <mat-label>Request Type</mat-label>
+                <input matInput formControlName="requestTypeCode" readonly>
+            </mat-form-field>
+        </ng-template>
+        <!-- end requestType -->
+        
+        <!-- branchCode -->
+        <ng-container *ngIf="!edit; else branchCodeDisabled">
+            <mat-form-field *ngIf="isMultipleBranch">
+                <mat-label>Select Request Branch</mat-label>
+    
+                <mat-select formControlName="branchCode" [(value)]="branchSelect" [disabled]="edit"
+                (selectionChange)="getNextTallyNo(req);" required=""
+                >
+                    <mat-option value=''>None</mat-option> 
+                    <mat-option *ngFor="let c of branches; " [value]="c.divisionCode">
+                        {{c.divisionName | uppercase}}
+                    </mat-option>
+        
+                </mat-select>  
+            </mat-form-field>
+        </ng-container>
+        <ng-template #branchCodeDisabled>
+            <mat-form-field  appearance="fill"  *ngIf="isMultipleBranch">
+                <mat-label>Branch code</mat-label>
+                <input matInput formControlName="branchCode" readonly>
+                </mat-form-field>
+        </ng-template>
+         <!-- end branchCode -->
+
+        <!-- requestNo --> 
+        <mat-form-field   appearance="fill">
+        <mat-label>{{ req == '' ? '' : req }} NO.</mat-label>
+        <input matInput formControlName="requestNo" readonly>
+        </mat-form-field>
+
+        <!-- requestDate --> 
+        <mat-form-field   appearance="fill">
+        <mat-label>Request Date</mat-label>
+        <input matInput readonly value="{{ requestDate | date: 'shortDate' }}">
+        </mat-form-field>
+ 
+        <!-- DYNAMIC FIELDS -->
+        <div *ngIf="req!='' || modal" class="headers-columns {{req}}-headers"
+            fxLayout="row wrap" fxFlex="100" fxLayoutAlign="space-between start" >
+
+            <ng-container *ngFor="let f of fields">
+        
+                <!-- date fields -->
+                <mat-form-field 
+                    *ngIf="f['type'] == 'date' && !f['disabled']"  class="{{f['class']+ ' ' +f['key']}}">
+                    <mat-label>{{ f['label'] }}</mat-label>
+                    <input matInput [matDatepicker]="picker" placeholder="{{ f['placeholder'] }}" 
+                        formControlName="{{f['key']}}" [readonly]="modal">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- text fields -->
+                <mat-form-field  
+                    *ngIf="f['type'] == 'text' && !f['disabled']" class="{{f['key']}} {{f['class']}}" >
+                    <mat-label>{{ f['label'] }}</mat-label>
+                    <input matInput formControlName="{{f['key']}}" [readonly]="f['search'] && f['key'] !== 'referenceAdb'">
+
+                    <button *ngIf="f['search'] && !modal" 
+                        mat-icon-button class="search-inline-field"
+                        color="primary" 
+                        (click)="openSearch({name:f['key'],index:0},$event)"
+                        ><mat-icon>search</mat-icon>
+                    </button>
+
+                </mat-form-field>
+
+                <!-- text areas -->
+                <mat-form-field 
+                    *ngIf="f['type'] == 'textarea' && !f['disabled']" class="text-area {{f['class']}}">
+                    <mat-label>{{ f['label'] }}</mat-label>
+                    <textarea matInput  placeholder="{{ f['placeholder'] }}" rows="3" cdkTextareaAutosize formControlName="{{f['key']}}"  [readonly]="modal">
+                    </textarea>
+                </mat-form-field> 
+
+                <!-- number fields -->
+            
+                <mat-form-field 
+                    *ngIf="f['type'] == 'number' && !f['disabled']" class="{{f['key']}} {{f['class']}}"
+                >
+                <!-- inputWithComma -->
+                    <mat-label>{{req === 'RFP' && f['key']=='extendedAmount'?'Extended Amount':  f['label'] }}</mat-label>
+                    <input matInput type="text" formControlName="{{f['key']}}" 
+                    inputWithComma
+                    (keyup)="numberFormat($event,f['key']); " [readonly]="modal || (req == 'FL' &&  f['key']=='extendedAmount')" required="true"
+                    >
+                    <mat-error *ngIf="hasError(f['key'], 'required')">This field is required</mat-error>
+                    <mat-error *ngIf="hasError(f['key'], 'pattern')">Only digits are allowed.</mat-error>
+
+            </mat-form-field>
+
+                <!-- toggle buttons -->
+                <!-- RSTYPE -->
+                <ng-container  *ngIf="f['type'] == 'toggle' && !f['disabled'] && f['key'] == 'rstype'">
+                  
+                    <mat-form-field *ngIf="modal">
+                        <mat-label>{{ f['label'] }}</mat-label>
+                        <input matInput type="text"  formControlName="{{f['key']}}" [readonly]="modal"
+                        >
+                    </mat-form-field>
+                   
+                    <mat-button-toggle-group 
+                        *ngIf="!modal"
+                        [ngClass]="{'mat-form-field-invalid': ngForm.submitted && headers.get('rstype').invalid}"
+                        formControlName="{{f['key']}}" class="rstype">
+                       
+                        <ng-container *ngFor="let t of f['datas']">
+                            <mat-button-toggle value="{{t['value']}}">{{ t['name'] }}</mat-button-toggle>
+                        </ng-container>
+                    </mat-button-toggle-group>
+ 
+
+                </ng-container>
+
+                 <!-- RFATYPE -->
+                 <ng-container  *ngIf="f['type'] == 'toggle' && !f['disabled'] && f['key'] == 'rfatype'">
+                  
+                    <mat-form-field *ngIf="modal">
+                        <mat-label>{{ f['label'] }}</mat-label>
+                        <input matInput type="text"  formControlName="{{f['key']}}" [readonly]="modal"
+                        >
+                    </mat-form-field>
+                   
+                    <mat-button-toggle-group 
+                        *ngIf="!modal"
+                        [ngClass]="{'mat-form-field-invalid': ngForm.submitted && headers.get('rfatype').invalid}"
+                        formControlName="{{f['key']}}" class="rfatype">
+                       
+                        <ng-container *ngFor="let t of f['datas']">
+                            <mat-button-toggle value="{{t['value']}}">{{ t['name'] }}</mat-button-toggle>
+                        </ng-container>
+                    </mat-button-toggle-group>
+ 
+
+                </ng-container>
+
+                <!-- select fields (items type) -->
+                <ng-container *ngIf="!edit">
+                    <ng-container *ngIf="f['type'] == 'select' && !f['disabled']">
+                        <mat-form-field>
+                            <mat-label>Select {{f['label']}}</mat-label>
+                
+                            <mat-select formControlName="{{f['key']}}" [(value)]="itemsType" required>
+                                <mat-option value='none'>None</mat-option>  
+                                <mat-option *ngFor="let d of f['datas']" [value]="d.value">
+                                    {{d.name}}
+                                </mat-option>
+                    
+                            </mat-select>  
+                        </mat-form-field>
+                    </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="f['type'] == 'select' && edit">
+                    <mat-form-field appearance="fill">
+                        <mat-label>{{f['label']}}</mat-label>
+                        <input matInput formControlName="{{f['key']}}" readonly>
+                    </mat-form-field>
+                </ng-container>
+
+                <ng-container *ngIf="f['type'] == 'checkbox' && !f['disabled']">
+                    <p><mat-checkbox formControlName="{{f['key']}}" labelPosition="before">{{f['label']}}</mat-checkbox></p>
+                </ng-container>
+ 
+ 
+                </ng-container> 
+
+           
+
+     
+        </div>
+
+    </ng-container>
+
+     <!-- TABLE SECTION v2 -->
+     <ng-container formArrayName="items" *ngIf="['RS','RTO','RFA','RFS','ADB','RFB','FL'].includes(req)">
+        <div class="table-items-v2-container">
+           
+        <table class="table-items-v2 {{req}}-items-v2">
+            <thead>
+                <tr>
+                  <th
+                  *ngFor="let icol of item_columns" 
+                  [ngClass]="icol['type'] == 'hidden'? 'hidden':icol['key']">
+                    {{ icol['label'] }}
+                  </th>
+                  <th class="actions" *ngIf="edit"></th> <!-- actions -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let c of items.controls; let i = index;" (click)="selectedrow = i;">
+                    <td *ngFor="let icol of item_columns;" [class]="icol['key']">
+                        <ng-container *ngIf="icol['type'] != 'number'; else decimal">
+                            {{ c['controls'][icol['key']].value }}
+                        </ng-container>
+                        <ng-template #decimal>
+                            {{ c['controls'][icol['key']].value | number: '1.2-2' }}
+ 
+                        </ng-template> 
+                    </td> 
+                    <td class="actions" *ngIf="edit">
+                        <button *ngIf="edit" mat-icon-button class="edit-item-bt" (click)="addItems('edit',$event,i)" color="accent">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot *ngIf="!edit">
+                <tr> 
+                    <div 
+                        [attr.colspan]="['RTO'].includes(req) ? (5): item_columns.length" 
+                        >
+                        
+                        <button mat-mini-fab matTooltip="Add Item" class="add-item-bt" (click)="addItems('add',$event)" color="primary">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                            
+                        
+                        <button [disabled]="items.length <= 0" matTooltip="Delete Last Item" mat-mini-fab class="add-item-bt" (click)="deleteItem()" color="warn">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div> 
+                    <ng-container *ngIf="['RTO'].includes(req) && items_grand_total > 0">
+                        <div>
+                            <span>GRAND TOTAL</span>    
+                        </div>    
+                        <div>    
+                           <span> {{ items_grand_total || 0}}</span>
+                        </div>
+                    </ng-container>
+                   
+                </tr>
+            </tfoot>
+        </table>
+
+        </div>
+    </ng-container> 
+
+    <!-- APPROVERS SECTION -->
+    <ng-container formArrayName="headers" *ngIf="req != ''">
+       
+        <div class="approver-field-container" 
+            fxLayout="row wrap" fxLayoutAlign="flex-start start" fxLayoutGap="5px">
+            <ng-container *ngFor="let ap of approvers">
+                <!--loop approvers--  -->
+                <ng-container *ngIf="ap['key'] == 'approver'">
+
+                    <ng-container *ngFor="let i of [1]">
+                            
+                        <mat-form-field *ngIf="!ap['disabled']">
+
+                            <mat-label>{{ i > 1 ? (ap['label']+i) : 'Immediate Head' }}</mat-label>
+
+                            <input color=""
+                                matInput 
+                                required="true"
+                                formControlName="{{ap['key']+'Name'+i}}" readonly 
+                                oninput="this.value = this.value.toLowerCase()" 
+                                style="text-transform: capitalize;">
+                            
+                            <button 
+                                *ngIf="ap['search'] && !modal && !edit"
+                                mat-icon-button class="search-inline-field"
+                                color="primary" aria-label="Search Approvers"
+                                (click)="openSearch({name:ap['key']+i,fullname:ap['key']+'Name'+i,index:0,appnum: i},$event)"
+                                >
+                                <mat-icon>search</mat-icon>
+                            </button> 
+                            
+                        </mat-form-field>
+
+                    </ng-container>
+
+                </ng-container>  
+
+                <!-- text fields -->
+                <mat-form-field fxFlex="100" fxFlex.gt-xs="49" fxFlex.gt-sm="49" fxFlex.gt-xl="49"
+                    *ngIf="ap['type'] == 'text' && !ap['disabled'] && ap['key'] != 'approver'" >
+                    <mat-label>{{ ap['label'] }}</mat-label>
+                    <input matInput formControlName="{{ap['key']}}" [readonly]="modal"> 
+                </mat-form-field>
+
+            </ng-container>
+        </div>
+    </ng-container>
+
+    <!-- RECOMMENDATION/COMMENT SECTION -->
+    <ng-container *ngIf="modal">
+        <mat-form-field style="width: 100%;">
+            <mat-label>Reccommendation/Comment</mat-label>
+            <textarea 
+                matInput 
+                rows="3" cdkTextareaAutosize 
+                value="{{ headers.controls['recommendation'].value }}" 
+                readonly>
+            </textarea>
+        </mat-form-field> 
+    </ng-container> 
+   
+    <!-- BUTTONS SECTION --> 
+    <div *ngIf="req && !modal" 
+        class="request-form-actions">
+
+            <button mat-raised-button (click)="refresh($event)"
+            color="primary" matTooltip="New Request">
+            <mat-icon>add</mat-icon>
+            <span class="hide-mobile">
+            NEW</span>
+            </button>
+ 
+            <button mat-raised-button (click)="viewAttachments()"
+            *ngIf="edit; else upload;"
+            color="accent" matTooltip="View Attachments">
+            <mat-icon>visibility</mat-icon>
+            <span class="hide-mobile">
+                VIEW ATTACH.
+            </span>
+            </button> 
+
+            <ng-template #upload>
+                <button mat-raised-button (click)="uploadAttachments()"
+                color="accent" matTooltip="Upload Attachments">
+                <mat-icon>upload</mat-icon>
+                <span class="hide-mobile">
+                    {{ attached_files.length == 0 ? 'UPLOAD':'VIEW'}}
+                    ATTACH.
+                </span>
+                </button> 
+            </ng-template>
+
+            <button mat-raised-button (click)="isSaving = false"
+            color="warn" matTooltip="Close Request">
+            <mat-icon>close</mat-icon>
+            <span class="hide-mobile">
+            CLOSE</span>
+            </button>
+            
+            <button mat-raised-button type="submit" [disabled]="isSaving" [disabled]="isSaving"
+            color="primary" matTooltip="Save Request" (click)="saveForm()">
+
+            <ng-container *ngIf="!isSaving; else process">
+                <mat-icon>check_circle</mat-icon> SAVE
+            </ng-container>
+            <ng-template #process>
+                <span class="processing">PROCESSING  <mat-spinner diameter="15"></mat-spinner></span>
+            </ng-template>
+ 
+            </button> 
+       
+    </div>    
+</form>

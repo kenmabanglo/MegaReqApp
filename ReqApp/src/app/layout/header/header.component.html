@@ -1,0 +1,107 @@
+  <mat-toolbar color="primary" class="mat-elevation-z6">
+    
+      <mat-toolbar-row>
+        <button mat-icon-button (click)="sidenav.toggle()" button class="">
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <button [hidden]="(isHandset$ | async)"
+        matTooltip="{{title}}" 
+        mat-button 
+        class="logo-button">
+        </button>  
+ 
+      <!-- shown on mobile -->
+      <div *ngIf="(isHandset$ | async)"> 
+        <button 
+          matTooltip="{{title}}" 
+          mat-button
+          [matMenuTriggerFor]="menuTitle" 
+          class="logo-button"
+            > 
+          </button>
+
+          <mat-menu #menuTitle="matMenu">
+            <button mat-menu-item  routerLink="/dashboard">
+              <mat-icon>dashboard</mat-icon>
+              <span>Dashboard</span>
+            </button>
+            <button mat-menu-item  routerLink="/dashboard">
+              <mat-icon>live_help</mat-icon>
+              <span>About</span>
+            </button>
+            <button mat-menu-item  routerLink="/dashboard">
+              <mat-icon>contact_phone</mat-icon>
+              <span>Contact</span>
+            </button>
+          </mat-menu>
+
+      </div> 
+     
+
+   <span fxFlex></span>
+
+   <span fxLayout="row" fxLayoutAlign="start center" class="inline-button">
+ 
+       <!-- shown on desktop -->
+       <div [hidden]="(isHandset$ | async)">  
+        <button mat-button routerLink="/dashboard">Dashboard</button>
+        <button mat-button routerLink="/about">About</button>
+        <button mat-button routerLink="/contact">Contact</button>
+      </div>
+
+        <button *ngIf="totalPending > 0"
+          mat-icon-button 
+          matTooltip="Pending Requests"
+          [matMenuTriggerFor]="notif_menu" >
+          <mat-icon 
+            matBadge="{{counts[0] + counts[1]}}" matBadgeColor="warn"
+            [matBadgeHidden]="hidden"
+          > notifications
+          </mat-icon>
+        </button>
+
+        <mat-menu #notif_menu="matMenu">
+         
+          <button mat-menu-item routerLink="/approver/approval-monitoring" class="menu-badge">
+            <div matBadge="{{counts[0]}}" matBadgePosition="before" matBadgeColor="warn"  [matBadgeHidden]="hidden">
+              
+            </div>
+            <span class="menu">Pending</span>
+          </button>
+
+          <button mat-menu-item routerLink="/master/user-list/inactive" *ngIf="counts[1] > 0" class="menu-badge">
+            <div matBadge="{{counts[1]}}" matBadgePosition="before" matBadgeColor="warn" [matBadgeHidden]="hidden">
+             
+            </div>
+            <span class="menu">For Activation</span>
+          </button>
+
+        </mat-menu>
+
+        <button 
+          mat-icon-button 
+          matTooltip="Profile"
+          [matMenuTriggerFor]="menu" >
+          <mat-icon>account_circle</mat-icon>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item routerLink="master/user-profile">
+            <mat-icon>contacts</mat-icon>
+            <span>Profile</span>
+          </button>
+          <button
+            mat-menu-item
+            matTooltip="Logout"
+            tooltip-position="side"
+            (click)="onLogout()"
+          >
+          <mat-icon>power_settings_new</mat-icon>
+          <span>Logout</span>
+        </button>
+        </mat-menu>
+
+      </span> 
+  </mat-toolbar-row>
+</mat-toolbar>

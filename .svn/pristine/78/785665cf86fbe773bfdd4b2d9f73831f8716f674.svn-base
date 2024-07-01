@@ -1,0 +1,204 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content>  
+   
+    <div id="app-status">
+        <app-status-steps [approvers]="approvers" [closed]="datas?.closed" [closer]="datas?.updatedByName"
+        ></app-status-steps>
+    </div>
+
+    <div id="print-preview" class="rs-preview">
+        <div class="print-wrapper">
+
+        <section id="company-details">
+            <span><h3>Tarlac MAC Enterprises Inc.</h3></span>
+            <span>#1024 Mac Arthur Highway, Tarlac City</span>
+            <span>Tel. Nos. 982-1524 / 982-1547</span>
+        </section>
+        
+        <section id="request-title">
+            <h3>RETURN SLIP</h3>
+            <h4 class="req-no">
+                <span>N</span>
+                <span>&#7885;</span> 
+                <span> {{ datas?.requestNo }}</span>
+            </h4>
+        </section>
+
+        <section id="">
+
+        </section>
+      
+        <section id="rs-header">
+           
+            <table style="width: 100%;">
+                <tr>
+                    <th style="width: 100px;"><h4>SUPPLIER:</h4></th>
+                    <td style="width: calc(70% - 120px);">{{ datas?.supplier  }}</td>
+                    <th style="width: 120px;"><h4>SUPPLIER CODE:</h4></th>
+                    <td style="width: calc(30% - 100px);">{{datas?.supplierCode }}</td>
+                </tr>
+                <tr>
+                    <th><h4>ADDRESS:</h4></th>
+                    <td>-</td>
+                    <th><h4>DATE:</h4></th>
+                    <td>{{datas?.requestDate | date: 'shortDate'}}</td>
+                </tr>
+                <tr>
+                    <th><h4>BRANCH:</h4></th>
+                    <td colspan="3">{{datas?.branchCode}}</td>
+                </tr>
+            </table>
+            
+            <!-- <div>
+                <h4></h4>
+                <span>{{ datas?.supplier  }}</span>
+            </div>
+            <div>
+                <h4>SUPPLIER CODE:</h4>
+                <span>{{datas?.supplierCode }}</span>
+            </div> 
+            <div>
+                <h4>ADDRESS:</h4>
+                <span>-</span>
+            </div> 
+            <div>
+                <h4>DATE:</h4>
+                <span>{{datas?.requestDate | date: 'shortDate'}}</span>
+            </div> 
+            <div>
+                <h4>BRANCH:</h4>
+                <span>{{datas?.branchCode}}</span>
+            </div>  
+             -->
+        </section>
+
+        <section id="rs-table">
+            <ng-container *ngIf="processing">
+                <app-loading></app-loading>
+            </ng-container> 
+
+            <table id="rs-tb" style="visibility: hidden;">
+                <thead>
+                    <tr> 
+                        <th>QTY</th>
+                        <th>DESCRIPTION</th>
+                        <th>STATUS</th>
+                        <th>REMARKS</th>
+                    </tr>
+                </thead>
+                
+                <tbody class="items">
+                 
+                    <ng-container *ngIf="datas" [hidden]="processing"> 
+                        <tr *ngFor="let item of datas.requestItems; let last = last; let i =index;" class="main-table" #requested>
+                            <td>{{ item.quantity }}</td>
+                            <td class="td-description">
+                                {{ item.description }}
+                                <br>{{ item.serialNo }}
+                            </td>
+                            <td class="cell"><span  class="ellipsis">{{ item.status }}</span></td>
+                            <td class="cell"><span class="ellipsis">{{ item.remarks }}</span></td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+                
+                <tbody [show]="itemRows.length > 0  && !processing">
+                    <ng-container *ngIf="itemRows.length > 0">
+                        <tr *ngFor="let rows of itemRows; let i =  index;" class="empty-table">
+                            <!-- <td>{{ rows }}</td> -->
+                            <td></td>
+                            <td class="td-description"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                </tbody> 
+            </table>
+    
+        </section>
+
+        <section id="rs-footer1">
+            <mat-checkbox [checked]="datas?.rstype == 'SER'? true: false" disabled>
+                SERVICE
+            </mat-checkbox>
+            <mat-checkbox [checked]="datas?.rstype == 'DED'? true: false" disabled>
+                DEDUCTION
+            </mat-checkbox>
+            <mat-checkbox [checked]="datas?.rstype == 'REP'? true: false" disabled>
+                REPLACEMENT
+            </mat-checkbox>
+        </section>
+
+        <section id="rs-footer2">
+            <div>
+                <h4>AMOUNT:</h4>
+                <span></span>
+            </div>
+            <div>
+                <h4>REFERENCE:</h4>
+                <span>{{ datas?.reference }}</span>
+            </div> 
+        </section>
+
+        <section id="rs-footer3">
+            <div>
+                <span>{{ datas?.createdByName }}</span>
+                <h4>Prepared By:</h4>
+            </div>
+            <div>
+                <span></span>
+                <h4>Returned By:</h4>
+            </div>
+            <div>
+                <span></span>
+                <h4>Sign/Printed Name</h4>
+            </div>
+        </section>
+
+        </div>
+    </div>
+
+   
+    
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <ng-container>
+        <button mat-raised-button color="warn" (click)="print()">
+            <mat-icon>print</mat-icon>
+            PRINT
+        </button>
+    </ng-container>
+
+    <ng-container>
+        <button mat-raised-button color="primary" (click)="viewAttachments()">
+            <mat-icon>attach_file</mat-icon>
+            ATTACHMENTS
+        </button>
+    </ng-container>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+
+   
+    
+</mat-dialog-actions>
+
+</div>
+
+

@@ -1,0 +1,7 @@
+.mat-column-branchCode {
+    flex: 0.5 !important;
+}
+
+.mat-column-reqType {
+    flex: 0.5 !important;
+}

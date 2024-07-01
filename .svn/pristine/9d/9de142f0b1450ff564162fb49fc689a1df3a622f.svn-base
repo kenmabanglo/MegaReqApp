@@ -1,0 +1,33 @@
+
+.flex-auto {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0 0;
+}
+.flex-auto mat-form-field {
+    flex: 1 1 auto;
+    max-width: 100%;
+    min-width: 48%;
+    margin-right: 5px;
+}
+
+.search-inline-field.mat-icon-button {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    background: #3f51b5;
+    color: white;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+}
+.search-inline-field.mat-icon-button mat-icon {
+    line-height: 20px;
+    font-size: 20px;
+}
+
+.approver-card:hover {
+  border-color: #3f15b5 !important;
+  cursor: pointer !important;
+}

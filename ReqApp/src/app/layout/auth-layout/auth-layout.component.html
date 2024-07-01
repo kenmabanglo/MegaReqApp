@@ -1,0 +1,40 @@
+<!-- <div class="auth-container light-bg"> -->
+  <div class="container login-container"> 
+    <div class="row">
+      <div class="col-lg-10 mx-auto login-desk">
+        <div class="row">
+          <div class="col-md-7 detail-box">
+            <img class="logo" src="./assets/purple-theme/login-reqapp-logo.png" alt="Mega ReqApp - Online Request App">
+            <div class="detailsh">
+              <img class="help" src="./assets/purple-theme/help.png" alt="">
+              <h3>MEGA Online Request App</h3>
+              <p>Contact Support:
+                <br> 
+                Viber: 0993-783-9208 | Call: 0966-135-3742
+                <a href="tel:09661353742">
+                  <button mat-icon-button class="contact-us call">  <mat-icon>call</mat-icon> </button>
+                </a>
+              </p>
+            </div>
+          </div>
+          <div class="col-md-5 loginform">
+              <h4>Welcome Ka-MEGA!</h4>
+              <p>Signin/Signup your Account</p>
+
+              <nav mat-tab-nav-bar>
+                <a mat-tab-link class="auth-links" *ngFor="let tabItem of tabs"
+                [routerLink]="tabItem.route" routerLinkActive #rla="routerLinkActive"
+                [active]="rla.isActive"
+                >
+                  {{tabItem.label}}  
+                </a>
+              </nav>
+             
+              <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+ 

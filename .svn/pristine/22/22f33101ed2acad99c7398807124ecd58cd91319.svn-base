@@ -1,0 +1,57 @@
+<form [formGroup]="approveForm">
+<h3 mat-dialog-title align="start">
+    <mat-icon>{{ data.approve?'thumb_up':'thumb_down' }}</mat-icon>
+     {{data.approve? 'Approve':'Disapprove'}} {{ data.type }} Request No. {{ data.rn }} 
+  </h3>
+  <mat-divider></mat-divider>    
+  <mat-dialog-content>
+    
+    <br>
+      <mat-form-field class="full-width" appearance="outline" floatLabel="always">
+          <mat-label>Recommendations/Comment</mat-label>
+          <textarea  
+              matInput  
+              placeholder="Add your comment here"
+              rows="3" cdkTextareaAutosize
+              formControlName="recommendation">
+          </textarea>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="outline" floatLabel="always"
+        *ngIf="data.approve && ['RFA','RFP','ADB'].includes(data.type) && !lastApprover">
+
+        <mat-label>Final Approver</mat-label>
+
+        <input color=""
+            matInput 
+            formControlName="approverName"
+             readonly oninput="this.value = this.value.toLowerCase()" style="text-transform: capitalize;">
+        
+        <button 
+            mat-icon-button class="search-inline-field search-button" 
+            color="primary" aria-label="Search Approvers"
+            (click)="openSearch($event)"
+            >
+            <mat-icon>search</mat-icon>
+        </button> 
+        
+    </mat-form-field>
+ 
+  
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+      <button mat-raised-button mat-dialog-close>
+          <mat-icon>close</mat-icon>
+          CANCEL
+      </button>
+      <button *ngIf="data.approve" mat-raised-button color="primary"  class="green-bt" (click)="submitApprove()" type="submit"  >
+        <mat-icon>thumb_up</mat-icon>
+        APPROVE NOW
+    </button>
+    <button *ngIf="!data.approve" mat-raised-button  color="warn" (click)="submitApprove()"  type="submit" >
+        <mat-icon>thumb_down</mat-icon>
+        REJECT
+    </button>
+  </mat-dialog-actions>
+
+</form>

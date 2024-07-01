@@ -1,0 +1,120 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span><mat-icon>{{edit?'edit':'add_circle'}}</mat-icon> {{edit? 'Edit':'Add'}} Item - ({{passedData.type}})</span>
+        </h2>
+ 
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content> 
+     <form  [formGroup]="items" id="addItemForm" class="{{passedData.type}}-item">
+        <div  *ngFor="let item of f_items"
+            [ngClass]="item['type'] == 'hidden'? 'hidden':item['key']">
+
+                <!-- number field -->
+            <ng-container
+                *ngIf="item['type'] == 'number' && (!['cost','totalCost','price','totalPrice'].includes(item['key']) || passedData.type == 'ADB' || passedData.type == 'FL') && !item['disabled']"
+            > 
+            <mat-form-field 
+                [appearance]="edit && !edittableFields.includes(item['key'])? 'fill':'outline'">
+
+                <mat-label>{{ item['label'] }}</mat-label>
+                <input 
+                matInput 
+                type="text" 
+                inputWithComma
+                formControlName="{{ item['key'] }}"  
+                (keyup)="numberFormat($event, item['key'])"
+                [readonly]="(edit && !edittableFields.includes(item['key']))"
+                > 
+                <mat-error *ngIf="hasError(item['key'], 'required')">This field is required</mat-error>
+                <mat-error *ngIf="hasError(item['key'], 'pattern')">Only digits are allowed.</mat-error>
+       
+            </mat-form-field>
+               
+            </ng-container>
+
+            <!-- text fields -->
+            <ng-container
+            *ngIf="item['type'] == 'text' && !item['disabled']">
+
+                <mat-form-field [ngClass]="item['search']?'full-width':''"  
+                    [appearance]="edit && !edittableFields.includes(item['key'])? 'fill':'outline'">
+
+                <mat-label>{{ item['label'] }}</mat-label>
+                    <input matInput 
+                    formControlName="{{ item['key'] }}" 
+                    [readonly]="(item['key'] == 'description' && !['ADB','RFS','RTO','RFA','FL'].includes(passedData.type)) || (edit && !edittableFields.includes(item['key']))">
+
+                    <mat-icon matRipple class="search-button" (click)="openSearch({name:item['key'],index:i},$event)"
+                        mat-icon-button matSuffix *ngIf="item['search']" [hidden]="edit" color="primary" aria-label="Search Item">
+                        search
+                    </mat-icon>
+ 
+                    <mat-error *ngIf="hasError(item['key'], 'required')">This field is required</mat-error>
+
+                </mat-form-field>
+
+            </ng-container>
+
+            <!-- serialNo -->
+            <ng-container
+                *ngIf="!item['disabled'] && item['key'] == 'serialNo' && serialized"
+                >
+                <mat-form-field>
+                    <mat-label>{{ item['label'] }}</mat-label>
+                    <input matInput formControlName="serialNo"> 
+                    <mat-error *ngIf="hasError(item['key'], 'required')">This field is required</mat-error>
+                   
+                </mat-form-field>
+
+            </ng-container>
+
+             <!-- locatinCode -->
+             <ng-container
+             *ngIf="!item['disabled'] && item['key'] == 'locationCode' && serialized"
+             >
+             <mat-form-field>
+                <mat-label>Select Location</mat-label>
+    
+                <mat-select formControlName="locationCode" [(value)]="location"
+                > 
+                    <mat-option *ngFor="let c of locations; " [value]="c.locationCode">
+                        {{c.locationCode +' - '+ c.locationName}}
+                    </mat-option>
+        
+                </mat-select>  
+                    <mat-error *ngIf="hasError(item['key'], 'required')">This field is required</mat-error>
+                </mat-form-field>
+             
+         </ng-container>
+
+            <!-- hidden fields -->
+            <ng-container
+            *ngIf="item['type'] == 'hidden' && !item['disabled']">
+                <input  formControlName="{{ item['key'] }}" type="hidden">
+            </ng-container>
+                        
+        </div>
+     </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+    <button mat-raised-button color="primary"   type="submit" 
+        cdkFocusInitial
+        [disabled]="saving"
+        (click)="submitItem()" > 
+        <mat-icon>save</mat-icon> SAVE
+    </button>
+</mat-dialog-actions>
+
+</div>

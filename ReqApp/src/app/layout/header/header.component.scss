@@ -1,0 +1,19 @@
+.logo-button {
+    background-image: url('~src/assets/purple-theme/reqapp-logo-white.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 130px;
+    height: 30px; 
+    vertical-align: middle;
+}
+.spacer {
+    flex: 1 1 auto;
+}
+.menu-badge {
+    .mat-badge-medium.mat-badge-above .mat-badge-content {
+        top: 11px;
+    }
+    > span.menu {
+        margin-left: 15px;
+    }
+}

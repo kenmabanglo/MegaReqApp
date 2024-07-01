@@ -1,0 +1,29 @@
+
+.create {
+    width: 700px;
+    border: 1px solid rgb(206, 195, 195);;
+    margin: 10px auto;
+    padding: 10px;
+    box-shadow: 1px 1px 1px gray;
+}
+.flex-auto {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0 0;
+}
+
+.flex-auto mat-form-field {
+    flex: 1 1 auto;
+    max-width: 100%;
+    min-width: 48%;
+    margin-right: 5px;
+}
+.mat-progress-bar {
+    height: 20px !important;
+}
+.progress {
+    color: #3f51b5;
+    font-weight: 600;
+    display: block;
+    text-align: center;
+}

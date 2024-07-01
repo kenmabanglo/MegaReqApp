@@ -1,0 +1,33 @@
+
+<!-- company name and logo -->
+<a class="sidenav-logo" align="center">
+  <img src="./assets/img/mega-profile.png" width="100px" style="border-radius:50%; text-align: center;">
+  <span>{{ user?.userSettings.fullName }}<br>({{user?.branchCode }})</span>
+</a>
+
+<mat-divider></mat-divider>
+<mat-nav-list id="sidenav-list">
+  
+  <ng-container *ngFor="let parent of navItems">
+
+    <ng-container *ngIf="(parent.role == user.role) || (user.role == 'Admin')" >
+   
+      <div *ngIf="parent.children" mat-subheader>{{ parent.name }}</div>
+       
+      <a *ngIf="!parent.children" mat-list-item routerLink="{{ parent.url }}" [routerLinkActive]="['active-link']">
+        <mat-icon mat-list-icon [ngStyle]="{'background-color': parent.color}">{{ parent.icon }}</mat-icon>
+        <span mat-line>{{ parent.name }}</span>
+      </a> 
+
+      <div *ngIf="parent.children" class="submenu" [ngClass]="{'expanded' : showSubmenu}">
+        <a *ngFor="let child of parent.children" [hidden]="child.name == 'Closed' && parent.name == 'Approved Requests'"  mat-list-item routerLink="{{ child.url }}" [routerLinkActive]="['active-link']">
+          <mat-icon mat-list-icon  [ngStyle]="{'background-color': child.color}">{{ child.icon }}</mat-icon>
+          <span mat-line>{{ child.name }}</span>
+        </a>
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+  
+</mat-nav-list> 

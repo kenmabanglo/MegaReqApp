@@ -1,0 +1,180 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content>  
+   
+    <div id="app-status">
+        <app-status-steps [approvers]="approvers" [closed]="datas?.closed" [closer]="datas?.updatedByName"
+        ></app-status-steps>
+    </div>
+
+    <div id="print-preview" class="rto-preview">
+        <div class="print-wrapper"> 
+        
+        <div id="adb-header">
+            <section id="logo">
+               <span class="logo-img"></span>
+            </section>    
+            <section id="request-title"> 
+                <h1>AUTHORIZATION TO DO BUSINESS</h1>
+                <div><h4>REQ.NO:</h4><span>{{datas?.requestNo}}</span></div>
+                <div><h4>Request Date:</h4><span>{{datas?.formattedRequestDate}}</span></div>
+            </section> 
+        </div>
+
+        <section id="adb-table">
+            <ng-container *ngIf="processing">
+                <app-loading></app-loading>
+            </ng-container> 
+
+            <table id="adb-tb" style="visibility: hidden;" *ngIf="datas"> 
+               <thead>
+                    <tr class="no-highlight">
+                        <td></td>
+                        <td><h4>Supervisor: </h4><span></span></td>
+                        <td><h4>Manager: </h4><span></span></td>
+                    </tr>  
+                    <tr class="highlight">
+                        <th colspan="3">Objectives & Justification</th>
+                    </tr> 
+                    <tr class="no-highlight">
+                        <td colspan="3" class="textarea">
+                            <span [innerHTML]="datas.objective" class="pre-wrap"></span>
+                        </td>
+                    </tr>   
+                    <tr class="highlight">
+                        <th colspan="3">Description & Resources</th>
+                    </tr>
+                    <tr class="no-highlight">
+                        <td colspan="3" class="textarea"> 
+                            <span [innerHTML]="datas.description" class="pre-wrap"></span>
+                        </td>
+                    </tr> 
+               </thead>
+
+                <thead>     
+                    <tr> 
+                        <th>SUPPLIER</th>
+                        <th>DESCRIPTION</th> 
+                        <th>ESTIMATED AMOUNT</th>
+                    </tr>
+                </thead>
+
+                <tbody class="items">
+                 
+                    <ng-container *ngIf="datas" [hidden]="processing"> 
+                        <tr *ngFor="let item of datas.requestItems; let last = last; let i =index;" class="main-table" #requested>
+                            <td>{{ item.supplierName }}</td>
+                            <td class="description">{{ item.description }}</td>
+                            <td>{{ item.totalPrice  |  number: '1.2-2' }}</td> 
+                        </tr>
+                    </ng-container>
+
+                    <ng-container [show]="itemRows.length > 0  && !processing">
+                        <ng-container *ngIf="itemRows.length > 0">
+                            <tr *ngFor="let rows of itemRows; let i =  index;" class="empty-table">
+                                <td></td> 
+                                <td class="description"></td>
+                                <td></td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                    
+                </tbody>
+                
+                <tbody>
+                   
+                </tbody>  
+                <tfoot>
+                    <tr class="highlight">
+                        <th colspan="3">Recommendation from Finance / Additional Conditions</th>
+                    </tr>
+                    <tr class="no-highlight">
+                        <td colspan="3" class="textarea">
+                            <span [innerHTML]="datas.recommendation" class="pre-wrap"></span>
+                        </td>
+                    </tr>
+                    <tr class="no-highlight">
+                        <th colspan="2"><span></span></th>
+                        <th>Total: <span>PHP {{grand_total  |  number: '1.2-2'}}</span></th>
+                    </tr>
+                </tfoot>
+            </table>
+    
+        </section>
+
+        <section id="adb-approvers">
+            <div class="box">
+                <h4>Reviewed By:</h4> 
+                <small>Finance</small>
+                <h4>Auditted By:</h4>
+            </div>
+            
+            <div class="box">
+                <h4>Noted By:</h4> 
+                <small></small>
+                <h4></h4>
+            </div>
+
+            <div class="box">
+                <h4>Noted By:</h4> 
+                <small></small>
+                <h4></h4>
+            </div> 
+
+            <div class="box">
+                <h4>Noted By:</h4>
+                <small></small>
+                <h4></h4>
+            </div>
+
+            <div class="box">
+                <h4>Approved By:</h4>
+                <small>General Manager</small>
+                <h4></h4>
+            </div> 
+        </section>
+
+        </div>
+    </div>
+
+   
+    
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <ng-container>
+        <button mat-raised-button color="warn" (click)="print()">
+            <mat-icon>print</mat-icon>
+            PRINT
+        </button>
+    </ng-container>
+
+    <ng-container>
+        <button mat-raised-button color="primary" (click)="viewAttachments()">
+            <mat-icon>attach_file</mat-icon>
+            ATTACHMENTS
+        </button>
+    </ng-container>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+
+   
+    
+</mat-dialog-actions>
+
+</div>

@@ -1,0 +1,31 @@
+<h2 mat-dialog-title align="start">Assign Branch to User: ({{passedData?.userName}})</h2>
+<mat-divider></mat-divider>
+
+<mat-dialog-content>
+  <form class="normal-form" >
+
+    <div class="mat-form-field-container">
+ 
+      <mat-selection-list #branchesSel multiple="false" (selectionChange)="onSelectionChange()">
+        <mat-list-option *ngFor="let b of passedData?.branches" [value]="b">
+          {{b.divisionCode + ' - ' + b.divisionName }}
+        </mat-list-option>
+      </mat-selection-list> 
+
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-divider></mat-divider>
+<mat-dialog-actions style="justify-content: space-between !important;">
+    <div align="start">
+        <!-- <button mat-raised-button color="green" mat-dialog-close>Assign</button> -->
+    </div>
+    <div align="end">
+        <button mat-raised-button mat-dialog-close>CANCEL</button>
+        <button mat-raised-button type="submit" [disabled]="isSaving" (click)="onSubmit()" color="primary" >SAVE</button>
+    </div>
+</mat-dialog-actions>
+
+

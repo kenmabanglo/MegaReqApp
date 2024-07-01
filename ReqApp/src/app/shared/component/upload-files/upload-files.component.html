@@ -1,0 +1,71 @@
+<div class="modal-container">
+
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>Upload Attachments</span>
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content class="upload-container"> 
+   
+         
+        <div class="image-container"> 
+
+        <div id="preview-attachments">
+            <span>Upload pdf files or take a snapshot.</span>
+                
+            <ng-container>
+                <mat-selection-list #files [(ngModel)]="selectedOptions">
+                    <mat-list-option *ngFor="let file of selectedFiles; let i = index;" [value]="file.name">
+                        {{file.name}} - ({{formatBytes(file.size)}})
+                    </mat-list-option>
+                </mat-selection-list>
+            </ng-container>
+ 
+        </div>
+
+        <div class="inline-buttons" align="center">
+
+        <button mat-raised-button (click)="deleteFile()" color="warn">
+            <mat-icon>delete</mat-icon><span class="hide-mobile"> Remove Selected</span>
+        </button>
+        
+        <button mat-raised-button (click)="file.click()" color="primary">
+            <mat-icon>add_a_photo</mat-icon><span class="hide-mobile"> Choose files</span>
+        </button>
+
+        <button mat-raised-button (click)="cancel()">
+            <mat-icon>close_circle</mat-icon><span class="hide-mobile"> Cancel</span>
+        </button>
+
+        <button mat-raised-button (click)="uploadSubmit()" [disabled]="_uploading" color="warn">
+            <ng-container *ngIf="!_uploading; else process">
+            <mat-icon>cloud_upload</mat-icon><span class="hide-mobile"> SAVE FILES</span>
+            </ng-container>
+            <ng-template #process>
+            <span class="processing">PROCESSING  <mat-spinner diameter="15"></mat-spinner></span>
+            </ng-template>
+        </button>
+
+        <input type="file" #file placeholder="Choose file" accept=".pdf, image/jpeg, image/jpg, image/png" 
+        multiple (change)="imagePreview(file.files, $event);"
+         style="display:none;">
+
+        </div>
+       
+        <!-- <div id="upload-image">
+        <button 
+            id="add_a_photo" mat-icon-button (click)="file.click()">
+            <mat-icon>add_a_photo</mat-icon>
+        </button>
+        </div> -->
+
+    </div>
+ 
+</mat-dialog-content>
+
+</div>

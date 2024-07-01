@@ -1,0 +1,14 @@
+
+<table-widget 
+[tableData]="users"
+[tableColumns]="tableColumns"
+[totalItems]="total"
+[isFilterable]="true"
+[isPageable]="true"
+[paginationSizes]="[10,20,30]"
+[defaultPageSize]="limit"
+(search)="filterData($event)"
+(clearBt)="clearSearch($event)"
+(page)="pageEvent = $event; onPaginateChange($event)"
+>
+</table-widget>

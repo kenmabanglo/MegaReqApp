@@ -1,0 +1,46 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+        </h2>
+
+        <div>
+        <label class="label-status label {{ status == 'PENDING'?'label-blue': (status == 'APPROVED'? 'label-green':'label-red') }}">{{ status }}</label>    
+        </div>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content> 
+    <div #container></div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <ng-container *ngIf="printable">
+        <button mat-raised-button color="warn" (click)="print()">
+            <mat-icon>print</mat-icon>
+            PRINT
+        </button>
+    </ng-container>
+
+    <ng-container *ngIf="attachments.length > 0">
+        <button mat-raised-button color="primary" (click)="viewAttachments()">
+            <mat-icon>attach_file</mat-icon>
+            ATTACHMENTS
+        </button>
+    </ng-container>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+
+   
+    
+</mat-dialog-actions>
+
+</div>

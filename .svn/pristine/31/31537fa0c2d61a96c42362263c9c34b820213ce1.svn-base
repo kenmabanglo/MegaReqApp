@@ -1,0 +1,13 @@
+app-footer span, app-footer small {
+    font-size: 11px !important;
+}
+
+app-footer .mat-toolbar {
+// background-color: #fff !important;
+border-top: 1px solid #dee2e6;
+// color: #869099 !important;
+padding: 1rem;
+height: 40px;
+font-size: 20px !important;
+}
+  

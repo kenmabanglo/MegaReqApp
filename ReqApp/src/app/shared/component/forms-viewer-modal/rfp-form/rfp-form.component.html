@@ -1,0 +1,182 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content>  
+   
+    <div id="app-status">
+        <app-status-steps [approvers]="approvers" [closed]="datas?.closed" [closer]="datas?.updatedByName"
+        ></app-status-steps>
+    </div>
+
+<div id="print-preview">
+    <div class="print-wrapper" [ngClass]="passedData.requestTypeCode"  fxLayout="column"> 
+
+        <section id="request-title" fxLayout="row" fxFlexAlign="center">
+            <h3>REQUEST FOR PAYMENT</h3> 
+        </section>
+
+        <section id="request-header" fxLayout="row wrap"  fxFlex="100">
+            <div class="col1" fxLayout="column" fxFlex="60">
+                <span class="logo-img"></span>
+                <!-- <img src="/assets/img/megasaver-logo.png" alt="1st Megasaver" width="80px"> -->
+                <small>(Note: Please provide necessary attachments.)</small>
+            </div>
+            <div class="col2" fxLayout="column" fxFlex="40">
+                <div fxLayout="row">
+                    <h4 fxFlex="150px">RFP No:</h4>
+                    <span class="bottom-line">{{ datas?.requestNo }}</span>
+                </div>
+                <div fxLayout="row">
+                    <h4 fxFlex="150px">Request Date:</h4>
+                    <span class="bottom-line">{{ datas?.requestDate | date: 'shortDate' }}</span>
+                </div> 
+                <div fxLayout="row">
+                    <h4 fxFlex="150px">Target Date:</h4>
+                    <span class="bottom-line">{{datas?.requirementDate | date: 'shortDate'}}</span>
+                </div>     
+            </div>
+            <div class="col3" fxLayout="column" fxFlex="100">
+                <div fxLayout="row">
+                    <h4 fxFlex="250px">Requisitioner:</h4>
+                    <span class="bottom-line">{{ datas?.createdByName }}</span>
+                </div>
+                <div fxLayout="row">
+                    <h4 fxFlex="250px">Store/Department:</h4>
+                    <span class="bottom-line">{{ datas?.branchCode }}</span>
+                </div>
+                <div fxLayout="row">
+                    <h4 fxFlex="250px">Activity Name/Reference ADB:</h4>
+                    <span class="bottom-line">{{ datas?.referenceAdb }} {{ datas?.isReferral == 'Y'?'- Referral':'' }}</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="form-items" fxLayout="column" fxFlex="100"> 
+            <table id="rfp-tb">
+                <thead>
+                    <tr> 
+                        <th>Particular/Item Description</th> 
+                        <th>EWT</th>
+                        <th>Extended Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <!-- {{datas?.description}} -->
+                            <span [innerHTML]="datas.description" class="pre-wrap"></span>
+                        </td>
+                        <td>
+                            {{datas?.ewt | number: '1.0-2'}}
+                        </td>
+                        <td>
+                            {{datas?.extendedAmount | number: '1.0-2'}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left" class="payableTo">
+                            Make Check Payable to: <span class="bottom-line">{{datas?.payableTo }}</span>
+                        </th>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                       <th align="left">TOTAL AMOUNT REQUESTED</th>
+                       <td></td>
+                       <td>{{datas?.extendedAmount | number: '1.0-2'}}</td>
+                    </tr>
+                </tbody>
+ 
+            </table>
+
+            <div fxLayout="row wrap" fxFlex="100">
+                <div fxLayout="column" fxFlex="20" class="border" fxLayoutAlign="space-between">
+                    <h4>Noted by:</h4>
+                    <h5>{{ datas?.approvers.name1 || '' }}</h5>
+                    <h4>Supervisor</h4>
+                </div>
+                <div fxLayout="column" fxFlex="20" class="border" fxLayoutAlign="space-between">
+                    <h4>Verified by:</h4>
+                    <h5>{{ datas?.approvers.name2 || '' }}</h5>
+                    <h4>Manager</h4>
+                </div>
+                <div fxLayout="column" fxFlex="20" class="border" fxLayoutAlign="space-between">
+                    <h4>Reviewed by:</h4>
+                    <h4></h4>
+                    <h4>Admin. Manager</h4>
+                </div>
+                <div fxLayout="column" fxFlex="20" class="border" fxLayoutAlign="space-between">
+                    <h4>Checked by:</h4>
+                    <h5></h5>
+                    <h4>Finance Manager</h4>
+                </div>
+                <div fxLayout="column" fxFlex="20" class="border" fxLayoutAlign="space-between">
+                    <h4>Approved by:</h4>
+                    <h5></h5>
+                    <h4>General Manager</h4>
+                </div>
+            </div>
+
+            <div fxLayout="row wrap" fxFlex="100">
+                <div fxLayout="column" fxFlex="33.3" class="border" fxLayoutAlign="space-between">
+                    <h4 align="left">Processed by:</h4>
+                    <h5>{{ datas?.processedByAp }}</h5>
+                    <h4>AP Assistant</h4>
+                </div>
+                <div fxLayout="column" fxFlex="33.3" class="border" fxLayoutAlign="space-between">
+                    <h4 align="left">Recorded by:</h4>
+                    <h5>{{ datas?.processedByGl }}</h5>
+                    <h4>GL Assistant</h4>
+                </div>
+                <div fxLayout="column" fxFlex="33.3" class="border" fxLayoutAlign="space-between">
+                    <h4 align="left">Liquidation Received by:</h4>
+                    <h5>{{ datas?.liquidatedBy }}</h5>
+                    <h4>Accounting Supervisor</h4>
+                </div>
+            </div>
+            
+        </section>
+ 
+    </div> 
+</div>
+
+ 
+    
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <ng-container>
+        <button mat-raised-button color="warn" (click)="print()">
+            <mat-icon>print</mat-icon>
+            PRINT
+        </button>
+    </ng-container>
+
+    <ng-container>
+        <button mat-raised-button color="primary" (click)="viewAttachments()">
+            <mat-icon>attach_file</mat-icon>
+            ATTACHMENTS
+        </button>
+    </ng-container>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+
+   
+    
+</mat-dialog-actions>
+
+</div>

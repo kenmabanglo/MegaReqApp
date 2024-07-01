@@ -1,0 +1,26 @@
+.auth-label {
+    margin: 1em auto;
+}
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+    height: 310px;
+    flex-wrap: nowrap;
+}
+mat-form-field, mat-checkbox {
+    width: 80%;
+    display: block;
+  }
+.login-button {
+    display: block;
+    width: 80%;
+    margin-top: auto;
+}
+@media screen and (max-width: 500px){
+    mat-card {
+      width: 300px !important;
+    }
+}

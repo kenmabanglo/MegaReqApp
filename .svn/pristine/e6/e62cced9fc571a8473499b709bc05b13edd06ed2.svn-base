@@ -1,0 +1,124 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.auth-container {
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+button.contact-us { 
+  color: white !important;
+  margin-right:2px;
+  &.viber {
+    background: #3f51b5 !important;
+  }
+  &.call {
+    background: #fa607e !important;
+  }
+} 
+body:not(.purple-theme) .auth-container.light-bg {
+  background-color: #efeef1 !important;
+}
+.auth-container.dark-bg {
+  background-color: #303F9F !important;
+}
+.auth-container > div {
+  width:50%;
+  text-align: right;
+}
+@media screen and (max-width: 991px){
+  // .auth-container.light-bg { 
+  //     background: var(--primary)!important;
+
+  //     .login-page.mobile-dark 
+  //     {
+  //         mat-card {
+  //           background: var(--primary);
+  //           color:white !important
+  //         }
+  //     }
+  //     .mat-tab-link, .mat-form-field-label, .mat-hint, .mat-icon,
+  //     .mat-form-field-appearance-outline .mat-form-field-outline {
+  //       color:white !important
+  //     }
+  // }
+
+  
+
+  .auth-container > div:first-child {
+    display: none !important;
+  }
+  .auth-container > div {
+    width:100%;
+  } 
+}
+::ng-deep .mat-tab-links { 
+  justify-content: center !important;
+}
+.login-page {
+  width: 100%;
+  // height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mat-tab-label-content {
+  font-size: 16px;
+  font-weight: 600;
+}
+.login-logo {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+mat-card {
+  width: 400px; 
+  height:550px;
+  border-radius: 8px;
+  vertical-align:middle; 
+}
+.mat-tab-label-active .mat-tab-label-content {
+  color: #303f9f !important;
+  font-weight: 600 !important;
+}
+
+.mat-tab-label {
+opacity: 1 !important;
+}
+
+.mat-tab-links {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.login-title {
+  font-family: "Russo One","Helvetica Neue",Helvetica,sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.login-title app-loading {
+  margin: 0 !important;
+}
+.title-req {
+  color: #3f51b5; 
+}
+span.title-mega {
+  position: absolute; 
+  z-index: 2;
+  font-size: 13px;
+  margin-top: -33px; 
+}

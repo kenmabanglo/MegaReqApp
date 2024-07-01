@@ -1,0 +1,11 @@
+<div class="footer">
+    <mat-toolbar color="primary">
+      <div fxLayout="row" fxLayoutAlign="space-between center" fxFill>
+       <span> Copyright &copy; {{year}}. MegaReqApp</span>
+  
+        <div fxFlex></div>
+  
+        <small>Version {{ version}}</small>
+      </div>
+    </mat-toolbar>
+  </div>

@@ -1,0 +1,17 @@
+<!--<h3 mat-dialog-title align="start">
+</h3>
+<mat-divider></mat-divider>
+<mat-dialog-actions align="end">
+  <button mat-raised-button [mat-dialog-close]="false">Cancel</button>
+  <button mat-raised-button [mat-dialog-close]="true" color="warn">Proceed</button>
+</mat-dialog-actions>-->
+
+<!-- Ken - 6/22/2024 -->
+<h2 mat-dialog-title>{{ header }}</h2>
+<mat-dialog-content align="center">
+   {{ message }}
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button [mat-dialog-close]="false">Cancel</button>
+  <button mat-raised-button [mat-dialog-close]="true" color="warn">Proceed</button>
+</mat-dialog-actions>

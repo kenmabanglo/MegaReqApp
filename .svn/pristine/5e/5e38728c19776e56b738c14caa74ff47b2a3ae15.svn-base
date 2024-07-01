@@ -1,0 +1,17 @@
+<app-request-form #reqForm
+    [requestTypes]="request_types" 
+    [selectedSupplier]="selectedSupplier"
+    [selectedItemCode]="selectedItemCode"
+    [selectedApprover]="selectedApprover"
+    [addedSerialNo]="addedSerialNo"
+    [errorMsg]="error"
+    [successMsg]="success"
+    [isSaving]="isSaving"
+    (reqTypeSelected)="displayNextTallyNo($event)"
+    (searchModal)="openSearch($event)"
+    (serialModal)="openSearch($event)"
+    (formData)="saveForm($event)"
+  >
+
+  </app-request-form>
+  

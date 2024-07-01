@@ -1,0 +1,26 @@
+[
+  {
+    "requestTypeCode": "ADB",
+    "requestTypeName": "Authority to do Business"
+  },
+  {
+    "requestTypeCode": "RFP",
+    "requestTypeName": "Request for Payment"
+  },
+  {
+    "requestTypeCode": "RS",
+    "requestTypeName": "Return Slip"
+  },
+  {
+    "requestTypeCode": "RTO",
+    "requestTypeName": "Request to Order"
+  },
+  {
+    "requestTypeCode": "RFS",
+    "requestTypeName": "Request for Supplies"
+  },
+  {
+    "requestTypeCode": "RFA",
+    "requestTypeName": "Request for Fixed Assets"
+  }
+]

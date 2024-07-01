@@ -1,0 +1,26 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span><mat-icon>attach_file</mat-icon> Attached Files</span>
+        </h2>
+ 
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content> 
+     
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+    
+</mat-dialog-actions>
+
+</div>

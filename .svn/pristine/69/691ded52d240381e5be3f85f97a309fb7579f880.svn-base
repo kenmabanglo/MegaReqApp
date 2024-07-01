@@ -1,0 +1,57 @@
+<form [formGroup]="form"> 
+   
+     <!-- column fields -->
+     <div class="flex-auto">
+       <mat-form-field >
+         <mat-label>Username</mat-label>
+         <input matInput formControlName="userName" readonly="" [disabled]="isSaving">
+
+         <button mat-icon-button 
+         class="search-inline-field"
+         color="primary" 
+         (click)="openSearch('userName',$event)"
+                        >
+                        <mat-icon>search</mat-icon>
+                    </button>
+       </mat-form-field>
+       
+       <mat-form-field>
+         <mat-label>Branch</mat-label>
+         <input matInput formControlName="branchCode" [disabled]="isSaving">
+       </mat-form-field>
+   
+       <mat-form-field>
+         <mat-label>Position Name</mat-label>
+         <input matInput formControlName="positionName" [disabled]="isSaving">
+       </mat-form-field>
+       
+       <mat-form-field>
+         <mat-label>Approver Name</mat-label>
+         <input matInput formControlName="approverUserName" required readonly [disabled]="isSaving">
+
+         <button mat-icon-button 
+         class="search-inline-field"
+         color="primary" 
+         (click)="openSearch('approverUserName',$event)"
+                        >
+                        <mat-icon>search</mat-icon>
+                    </button>
+
+       </mat-form-field>
+
+      </div>
+      
+      <div>
+        <button mat-flat-button color="primary"
+        (click)="saveApprover()" [disabled]="isSaving">
+          <mat-icon>save</mat-icon> Save Approver
+        </button>
+   
+        <button mat-flat-button color="warn" (click)="cancel()">
+         <mat-icon>cancel</mat-icon> Cancel
+       </button>
+      </div>
+    
+     
+   </form>
+   

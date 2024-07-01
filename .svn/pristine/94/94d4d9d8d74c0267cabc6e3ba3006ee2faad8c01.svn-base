@@ -1,0 +1,50 @@
+.mat-app-background {
+  height: 100%;
+}
+.mat-sidenav-content {
+  height: 100vh
+}
+
+.mat-drawer {
+  width: 250px !important;
+}
+
+.mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+}
+
+app-footer { 
+  margin-top: auto;
+  bottom: 0;
+  height: 40px;
+  position: fixed;
+  width: 100%; 
+}
+    
+section.body { 
+  padding: 0;
+  // height: 100vh !important
+}
+
+section.body.dashboard {
+  background: #f4f6f9 !important;
+  height: calc(100vh - 105px) !important; 
+}
+mat-sidenav-content {
+  // background: #ffff !important;
+}
+
+.body {
+  padding: 0 25px;
+  height: calc(100vh - 106px) !important;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+@media screen and (min-width: 993px){
+  section.body {
+    background: #f4f6f9 !important;
+    padding: 24px;
+  }
+}

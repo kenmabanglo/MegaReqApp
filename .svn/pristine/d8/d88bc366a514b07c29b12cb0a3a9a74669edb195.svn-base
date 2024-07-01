@@ -1,0 +1,35 @@
+<mat-horizontal-stepper [linear]="true" #stepper  (selectionChange)="$event"> 
+        <mat-step [ngClass]="app.status" *ngFor="let app of approvers" [completed]="false" [editable]="false" [state]="app.status">
+            <ng-template matStepLabel>
+                {{ app.approver | titlecase }}
+                <label class="label-status label {{ app.status == 'pending'?'label-blue': (app.status == 'approved'? 'label-green':'label-red') }}">{{ app.status }}</label>    
+            </ng-template> 
+        </mat-step> 
+
+        <mat-step class="closed" label="CLOSED" *ngIf="closed == 'Y' || _closed=='Y'" [editable]="false" [completed]="false" state="closed">
+            <ng-template matStepLabel>
+                {{ _closer | titlecase }}
+                <label class="label-status label label-red }}">closed</label>    
+            </ng-template> 
+        </mat-step> 
+
+        <!-- Icon overrides. -->
+        <ng-template matStepperIcon="pending">
+            <mat-icon>pending</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="approved">
+            <mat-icon>check_circle_outline</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="rejected">
+            <mat-icon>highlight_off</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="done">
+            <mat-icon>check_circle_outline</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="closed">
+            <mat-icon>lock</mat-icon>
+        </ng-template>
+
+
+</mat-horizontal-stepper>
+  

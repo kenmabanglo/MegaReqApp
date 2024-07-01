@@ -1,0 +1,51 @@
+<div class="modal-container">
+
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>Serial No Entry</h2>
+    
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+          <mat-icon>close</mat-icon>
+        </button> 
+        
+      </div>
+      
+      <mat-dialog-content class="mat-typography">
+        <form [formGroup]="form" >
+             
+            <table class="mat-table">
+               <tbody>
+                <ng-container formArrayName="serials">
+                  <!-- <tr class="mat-row" *ngFor="let sn of serials.controls; let i = index"  [formGroupName]="i"> -->
+                    <tr class="mat-row" *ngFor="let sn of serials.controls; let i = index"  [formGroupName]="i">
+                      <!-- <td class="mat-cell">{{ i+1 }}</td> -->
+                      <td class="mat-cell">
+                          
+                          <mat-form-field class="full-width">
+                            <input matInput [id]="'sn-input' + i" formControlName="serialNo" (keyup.enter)="focusNext(i)"> 
+                            <mat-error></mat-error>
+                          </mat-form-field>
+                      </td>
+                  </tr> 
+                  </ng-container>
+               </tbody>
+            </table>
+ 
+
+        </form>
+
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <button mat-raised-button color="warn" mat-dialog-close>
+          <mat-icon>close</mat-icon>
+           CANCEL
+        </button>
+        <button mat-raised-button color="primary" 
+          cdkFocusInitial
+          (click)="submitSelected()" >
+          <mat-icon>check_circle</mat-icon>
+           SAVE
+      </button>
+      </mat-dialog-actions>
+    
+    </div>

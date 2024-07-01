@@ -1,0 +1,6 @@
+<app-request-list-table
+[columns]="columns"
+[dataset]="dataset"
+(dataFilter)="initDataSource($event)"
+[pageType]="'request-history'">
+</app-request-list-table>

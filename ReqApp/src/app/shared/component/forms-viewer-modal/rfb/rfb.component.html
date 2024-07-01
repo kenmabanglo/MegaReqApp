@@ -1,0 +1,138 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content>  
+   
+    <div id="app-status">
+        <app-status-steps [approvers]="approvers" [closed]="datas?.closed" [closer]="datas?.updatedByName"
+        ></app-status-steps>
+    </div>
+
+    <div id="print-preview" class="rfb-preview">
+        <div class="print-wrapper">
+ 
+        <section id="request-title" class="center">
+            <h3>REQUEST FORM FOR BACKLOAD UNIT</h3>
+            <h4 class="req-no">
+                <span>N</span>
+                <span>&#7885;</span> 
+                <span> {{ datas?.requestNo }}</span>
+            </h4>
+        </section>
+      
+        <section id="rfb-header" class="flex">
+            <div class="flex">
+                <h4>TO:</h4>
+                <span class="bottom-line">{{ datas?.assignedTo }}</span>
+            </div> 
+            <div>
+                <h4>DATE:</h4>
+                <span class="bottom-line">{{datas?.requestDate | date: 'shortDate'}}</span>
+            </div>      
+            
+        </section>
+
+        <section id="rfb-table">
+            <ng-container *ngIf="processing">
+                <app-loading></app-loading>
+            </ng-container> 
+
+            <table id="rfb-tb" style="visibility: hidden;">
+                <thead>
+                    <tr> 
+                        <th>QTY</th>
+                        <th>MODEL/BARCODE</th> 
+                    </tr>
+                </thead>
+                
+                <tbody class="items"> 
+                    <ng-container *ngIf="datas" [hidden]="processing"> 
+                        <tr *ngFor="let item of datas.requestItems; let last = last; let i =index;" class="main-table" #requested>
+                            <td>{{ item.quantity }}</td>
+                            <td class="td-description">{{ item.description }}</td> 
+                        </tr>
+                    </ng-container>
+                </tbody>
+                
+                <tbody [show]="itemRows.length > 0  && !processing">
+                    <ng-container *ngIf="itemRows.length > 0">
+                        <tr *ngFor="let rows of itemRows; let i =  index;" class="empty-table">
+                            <td></td>
+                            <td class="td-description"></td>
+                        </tr>
+                    </ng-container>
+                </tbody> 
+            </table>
+    
+        </section>
+
+        <section id="rfb-footer1">
+            <div fxLayout="row" fxFlex="100">
+                <h4>REASON:</h4>
+                <span class="bottom-line" style="width: 100% !important">{{datas?.objective}}</span>
+            </div> 
+        </section>
+
+        <section id="rfb-footer2" class="flex">
+            <div class="flex-column">
+                <span>{{ datas?.preparedBy }}</span>
+                <h4>PREPARED BY<br>Sign/Print name</h4>
+            </div>
+            <div class="flex-column">
+                <span></span>
+                <h4>REQUESTED BY<br>Sign/Print name</h4>
+            </div>
+            <div class="flex-column">
+                <span></span>
+                <h4>ACKNOWLEDGED BY<br>Sign/Print name</h4>
+            </div>
+        </section>
+
+        </div>
+
+        <div class="center" style="text-align: center;">
+            (IC COPY)
+        </div>
+    </div>
+
+   
+    
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <ng-container>
+        <button mat-raised-button color="warn" (click)="print()">
+            <mat-icon>print</mat-icon>
+            PRINT
+        </button>
+    </ng-container>
+
+    <ng-container>
+        <button mat-raised-button color="primary" (click)="viewAttachments()">
+            <mat-icon>attach_file</mat-icon>
+            ATTACHMENTS
+        </button>
+    </ng-container>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+
+   
+    
+</mat-dialog-actions>
+
+</div>

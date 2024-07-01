@@ -1,0 +1,128 @@
+<form [formGroup]="form">
+  <!-- column fields -->
+  <div class="flex-auto">
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="userName" readonly="" [disabled]="isSaving">
+      <button mat-icon-button class="search-inline-field" color="primary" (click)="openSearch('userName',$event)">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Branch</mat-label>
+      <input matInput formControlName="branchCode" [disabled]="isSaving">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Position Name</mat-label>
+      <input matInput formControlName="positionName" [disabled]="isSaving">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Approver Name</mat-label>
+      <input matInput formControlName="approverUserName" required readonly [disabled]="isSaving">
+      <button mat-icon-button class="search-inline-field" color="primary" (click)="openSearch('approverUserName',$event)">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  <!-- Ken - 6/19/2024 -->
+  <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
+    <!-- Check if userName is selected -->
+    <ng-container *ngIf="form.get('userName').value; else selectUser">
+
+      <!-- Display Current User Approvers -->
+      <ng-container *ngIf="currentApprovers && currentApprovers.length > 0; else noApprovers">
+        <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
+          <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+            <ng-container *ngFor="let approver of currentApprovers">
+              <div fxLayout="column" fxLayoutAlign="start center" class="approver-wrapper">
+                <mat-card *ngIf="approver" class="approver-card">
+                  <span class="badge badge-pill badge-success">Current Approver</span>
+                  <mat-card-title>{{ approver?.approverFullName }}</mat-card-title>
+                  <mat-card-subtitle>
+                    {{ approver?.approverBranchCode }} > {{ approver?.approverPositionName }}
+                    <br /> <small>Added by {{ approver?.userAddFullName }}</small>
+                  </mat-card-subtitle>
+                </mat-card>
+                <div fxFlex="none" class="fab-container">
+                  <button mat-fab color="warn" aria-label="Delete Approver" matTooltip="Delete" (click)="deleteApprover(approver?.tranId, approver?.approverFullName)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Display Current User Branches -->
+      <!--<ng-container *ngIf="currentBranches && currentBranches.length > 0; else noBranches">
+        <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
+          <ng-container *ngFor="let branchGroup of groupedBranches(currentBranches, 4)">
+            <div fxLayout="row wrap" fxLayoutAlign="space-evenly center" fxLayoutGap="10px" class="branch-row">
+              <ng-container *ngFor="let branch of branchGroup">
+                <div fxFlex="20" fxLayout="column" fxLayoutAlign="start center" class="branch-wrapper">
+                  <div class="branch-card-container">
+                    <mat-card *ngIf="branch" class="branch-card same-size">
+                      <mat-card-title></mat-card-title>
+                      <mat-card-subtitle></mat-card-subtitle>
+                    </mat-card>
+                    <div class="fab-container" fxLayoutAlign="center center">
+                      <button mat-fab color="warn" aria-label="Delete Branch" matTooltip="Delete" (click)="deleteBranch(branch?.userName, branch?.branchCode)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>-->
+
+    </ng-container>
+
+    <!-- Template for selecting a user -->
+    <ng-template #selectUser>
+      <div fxLayout="row" fxLayoutAlign="center center">
+        <mat-card class="branch-card">
+          <mat-card-content>
+            <p>Please select a user to view its approver/s and assigned branches.</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </ng-template>
+
+    <!-- Template for no approvers -->
+    <ng-template #noApprovers>
+      <div fxLayout="row" fxLayoutAlign="center center">
+        <mat-card class="approver-card">
+          <mat-card-content>
+            <p>There is currently no approver assigned to this user.</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </ng-template>
+
+    <!-- Template for no branches -->
+    <!--<ng-template #noBranches>
+      <div fxLayout="row" fxLayoutAlign="center center">
+        <mat-card class="branch-card">
+          <mat-card-content>
+            <p>There is currently no branch assigned to this user.</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </ng-template>-->
+  </div>
+
+  <br />
+  <!-- -->
+  <div align="end">
+    <button mat-flat-button color="primary" (click)="saveApprover()" [disabled]="isSaving">
+      <mat-icon>save</mat-icon> Save Approver
+    </button>
+    <button mat-flat-button color="warn" (click)="cancel()">
+      <mat-icon>cancel</mat-icon> Cancel
+    </button>
+  </div>
+</form>

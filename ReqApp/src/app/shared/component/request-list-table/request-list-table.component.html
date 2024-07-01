@@ -1,0 +1,303 @@
+<!-- search field --> 
+<div id="list-filter-section" class="{{pageType}}">
+
+    <div class="col1 col-filters">
+ 
+        <!-- Filter By Request -->
+        <mat-form-field  *ngIf="pageType != 'request-history'"
+            class="requestType filter-request-type"
+            floatLabel="always" appearance="outline" color="primary">
+            <mat-label>Filter By Request</mat-label>
+            <mat-select [(value)]="req" (selectionChange)="initDataSource(1,10,$event.value)">
+                <mat-option value=''>All</mat-option>
+                <mat-option *ngFor="let c of request_types; " [value]="c.requestTypeCode">
+                {{c.requestTypeCode}} - {{c.requestTypeName }}
+                </mat-option>
+            </mat-select>  
+        </mat-form-field>
+
+        <!-- Create -->
+        <button *ngIf="pageType=='request-history'"
+            class="request-history mobile-label hide-mobile"
+            mat-raised-button color="primary" routerLink="/request/form-entry">
+            <mat-icon>add</mat-icon>
+            <span>Create Request</span>
+        </button>
+
+        <!-- History -->
+        <!-- <button *ngIf="pageType=='approval-monitoring'"
+            mat-mini-fab routerLink="/approver/approval-history" color="warn" matTooltip="View History">
+            <mat-icon>visibility</mat-icon>
+        </button> -->
+
+        <button *ngIf="pageType=='approval-monitoring'"
+            class="view-history"
+            mat-raised-button color="warn" routerLink="/approver/approval-history">
+            <mat-icon>visibility</mat-icon>
+            <span>View History</span>
+        </button>
+
+        <!-- Refresh -->
+        <button *ngIf="['approval-history','approval-monitoring'].includes(pageType)"
+            class="refresh"
+            mat-raised-button (click)="initDataSource()" color="accent" matTooltip="Refresh Data">
+            <mat-icon>refresh</mat-icon> Refresh
+        </button>
+
+        <!-- <button *ngIf="pageType == 'viewer' && user.userName != 'Cyrine01'"
+            class="view-history"
+            mat-raised-button color="warn" routerLink="/viewer/close-rfp">
+            <mat-icon>visibility</mat-icon>
+            <span>View Closed</span>
+        </button> -->
+
+        <!-- Filter By Branch -->
+       
+        <mat-form-field *ngIf="pageType == 'viewer' || pageType=='approval-history-closed'"  floatLabel="always" appearance="outline" color="primary">
+            <mat-label>Filter By Branch</mat-label>
+            <input type="text"
+                 placeholder="Select Branch" 
+                 matInput 
+                 #searchB
+                 [formControl]="searchBranch" 
+                 (input)="applyFilterBranch($event)"
+                 [matAutocomplete]="auto">
+              <button [hidden]="hiddenCloseBranch" matSuffix mat-icon-button aria-label="Clear" (click)="clearSearchBranch()">
+                <mat-icon>close</mat-icon>
+              </button>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="applyFilterBranch($event)" [displayWith]="displayFn"> 
+              <mat-option *ngFor="let b of filteredOptions | async" [value]="b">
+                {{ b.divisionName | uppercase }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>    
+        <!-- <button *ngIf="['approval-history','approval-monitoring'].includes(pageType)"
+          mat-mini-fab (click)="initDataSource()" color="accent"
+          matTooltip="Refresh Data">
+            <mat-icon>refresh</mat-icon>
+        </button> -->
+
+    </div>
+
+    <div class="col2 col-search">
+        <mat-form-field appearance="fill" class="searchField search-field">
+            <input matInput ngModel placeholder="Search Request" #search>
+            <button [hidden]="hiddenClose" matSuffix mat-icon-button aria-label="Clear" (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field> 
+    </div>
+
+</div>
+
+<div *ngIf="dataSource" class="mat-table-container"> 
+
+    <mat-table #table [dataSource]="dataSource">
+        <!-- Branch Column -->
+        <ng-container matColumnDef="branchCode">
+            <mat-header-cell *matHeaderCellDef>Branch</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Branch</span>
+                {{ element['branchCode'] }}
+            </mat-cell>
+        </ng-container>
+
+
+     <!-- Code Column -->
+        <ng-container matColumnDef="reqNo">
+            <mat-header-cell *matHeaderCellDef>Request No.</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">RN.</span>
+                {{ element['requestNo'] }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Date</span>
+                {{ element['requestDate'] | date: 'shortDate' }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Requestor Column -->
+        <ng-container matColumnDef="requestor">
+            <mat-header-cell  *matHeaderCellDef >Requestor</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">From</span>
+                {{ element.createdByName | titlecase }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="reqType">
+            <mat-header-cell *matHeaderCellDef >Request</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Type</span>
+                <label class="label" [ngClass]="labelColors[element.requestTypeCode]">
+                    {{ element.requestTypeCode }}
+                </label>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Immediate Column -->
+        <ng-container matColumnDef="immediateHead">
+            <mat-header-cell  *matHeaderCellDef >Immediate</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Immediate</span>
+                {{ element.approver1 == user.userName ? 'YES':'' }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Date Required Column -->
+        <ng-container matColumnDef="dateRequired">
+            <mat-header-cell  *matHeaderCellDef >Required Date</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Required Date</span>
+                {{ element.requirementDate | date: 'shortDate'}}
+            </mat-cell>
+        </ng-container>
+        
+         <!-- Approved Date Columns -->
+         <ng-container matColumnDef="approvedDate">
+            <mat-header-cell  *matHeaderCellDef >Approved Date</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Approved Date</span>
+                {{ element?.approvedDate | date: 'shortDate'}}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Rejected Date Columns -->
+        <ng-container matColumnDef="rejectedDate">
+            <mat-header-cell  *matHeaderCellDef >Rejected Date</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Rejected Date</span>
+                {{ element?.rejectedDate | date: 'shortDate'}}
+            </mat-cell>
+        </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef >Status</mat-header-cell>
+            <mat-cell *matCellDef="let element"> 
+                <span class="mobile-label">Status</span>
+                <label class="label" [ngClass]="statColors[element.status]">
+                    <mat-icon>{{statIcons[element.status]}}</mat-icon>
+                    {{ element.closed == 'Y' ? '': element.status}}
+                </label>
+                <label *ngIf="element.closed == 'Y'" class="label label-red">
+                    <mat-icon>lock</mat-icon>
+                </label>
+            </mat-cell>
+        </ng-container>  
+
+        
+        <!-- type = RTO, RFP Column -->
+        <ng-container matColumnDef="type">
+            <mat-header-cell  *matHeaderCellDef >Type</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="mobile-label">Type</span>
+                {{ element.type == "Y"? "Referral": (element.type == "N"? "":element.type)}}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+            <mat-header-cell  *matHeaderCellDef >Actions</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-raised-button color="primary" (click)="viewRequest(element)" matTooltip="View Request">
+                    <mat-icon>visibility</mat-icon>
+                    <span class="mobile-label">View</span>
+                </button>
+         
+                <ng-container *ngIf="pageType == 'viewer'">
+                    <button *ngIf="element?.status == 'Approved'"
+                        mat-raised-button color="warn" matTooltip="Close Request" (click)="closeRequest(element)">
+                        <mat-icon>lock</mat-icon>
+                        <span class="mobile-label">Close</span>
+                   
+                    </button>
+                </ng-container>
+ 
+                <ng-container *ngIf="pageType == 'approval-monitoring'">
+                    <!-- hide 02/08/2023 due to new matrix system -->
+                    <!-- <button *ngIf="element.requestTypeCode == 'RFP'" 
+                        mat-raised-button class="bg-orange" routerLink="/request/form-entry" [state]="element" matTooltip="Change Request Details">
+                        <mat-icon>edit</mat-icon>
+                        <span class="mobile-label">Change</span>
+                    </button> -->
+
+                    <!--  -->
+                    <button *ngIf="element.requestTypeCode == 'RTO' && dm" 
+                    mat-raised-button class="bg-orange" routerLink="/request/form-entry" [state]="element" matTooltip="Edit Request">
+                        <mat-icon>edit</mat-icon>
+                        <span class="mobile-label">Change</span>
+                    </button>
+
+                    <button mat-raised-button color="accent" matTooltip="Approve Request" (click)="approveRequest(element)">
+                        <mat-icon>thumb_up</mat-icon>
+                        <span class="mobile-label">Approve</span>
+                    </button>
+                    <button mat-raised-button color="warn" matTooltip="Reject Request" (click)="rejectRequest(element)">
+                        <mat-icon>thumb_down</mat-icon>
+                        <span class="mobile-label">Reject</span>
+                    </button>
+
+                </ng-container>
+
+            </mat-cell>
+        </ng-container>
+
+        <!-- Loading Column -->
+        <ng-container matColumnDef="loading">
+            <mat-footer-cell *matFooterCellDef [attr.colspan]="columnsToDisplay.length">
+                <app-loading></app-loading>
+            </mat-footer-cell>
+        </ng-container>
+
+        <!-- No Data Received -->
+        <ng-container matColumnDef="noData">
+        <mat-footer-cell *matFooterCellDef [attr.colspan]="columnsToDisplay.length">
+                <span class="loading-msg">NO DATA FOUND......</span>
+        </mat-footer-cell>
+      </ng-container>
+
+        <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: columnsToDisplay;"></mat-row>
+
+        <mat-footer-row *matFooterRowDef="['loading']" [hidden]="!isLoading"></mat-footer-row>
+        <mat-footer-row *matFooterRowDef="['noData']" [hidden]="isLoading || (totalPage > 0)"></mat-footer-row>
+ 
+    </mat-table>        
+
+    
+    
+    <mat-paginator  
+    [length]="totalPage"
+    [pageSize]="limit" 
+    (page)="pageEvent = $event; onPaginateChange($event)"
+    showFirstLastButtons>
+    </mat-paginator>
+
+</div>   
+
+<!-- <div class="show-mobile">
+
+  <button *ngIf="pageType=='request-approval-'"
+          mat-fab class="float-create" routerLink="/request/form-entry" color="primary" matTooltip="Create Request">
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <button *ngIf="pageType=='approval-monitoring'"
+          mat-fab class="float-create" routerLink="/approver/approval-approval-" color="warn" matTooltip="View approval-">
+    <mat-icon>visibility</mat-icon>
+  </button>
+
+  <button *ngIf="pageType=='approval-history'"
+          mat-fab class="float-create" (click)="initDataSource()" color="accent"
+          matTooltip="Refresh Data">
+    <mat-icon>refresh</mat-icon>
+  </button>
+
+</div> -->

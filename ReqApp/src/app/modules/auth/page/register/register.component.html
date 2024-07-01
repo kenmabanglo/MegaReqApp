@@ -1,0 +1,83 @@
+<form class="register-form" [formGroup]="registerForm">
+
+      <div class="login-det">
+
+      <mat-form-field  appearance="fill">
+        <mat-label>First Name</mat-label>
+        <input matInput type="text" formControlName="firstName">
+        <mat-error *ngIf="hasErrorRegister('firstName', 'required')">First Name is required</mat-error>
+        <mat-error *ngIf="hasErrorRegister('firstName', 'maxlength')">Maximum length must be 50 characters</mat-error>
+        <mat-icon matSuffix>perm_identity</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Last Name</mat-label>
+        <input matInput type="text" formControlName="lastName">
+        <mat-error *ngIf="hasErrorRegister('lastName', 'required')">Last Name is required</mat-error>
+        <mat-error *ngIf="hasErrorRegister('lastName', 'maxlength')">Maximum length must be 50 characters</mat-error>
+        <mat-icon matSuffix>perm_identity</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field  appearance="fill">
+        <mat-label>Position</mat-label>
+        <input matInput type="text" formControlName="positionName">
+        <mat-error *ngIf="hasErrorRegister('positionName', 'required')">Position name is required</mat-error>
+        <mat-error *ngIf="hasErrorRegister('positionName', 'maxlength')">Maximum length must be 50 characters</mat-error>
+        <mat-icon matSuffix >person_pin</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field  appearance="fill">
+        <mat-label>Select Branch</mat-label>
+        <input type="text" 
+             matInput 
+             #searchB
+             formControlName="branchCode" 
+             [matAutocomplete]="auto">
+          <button [hidden]="hiddenCloseBranch" matSuffix mat-icon-button aria-label="Clear" (click)="clearSearchBranch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"> 
+          <mat-option *ngFor="let b of filteredOptions | async" [value]="b">
+            {{ b.divisionName | uppercase }}
+            </mat-option> 
+        </mat-autocomplete>
+        <mat-error *ngIf="hasErrorRegister('branchCode', 'required')">Branch is required</mat-error>
+        <mat-error *ngIf="hasErrorRegister('branchCode', 'incorrect')">
+          Please select a valid branch
+      </mat-error>
+      </mat-form-field>
+
+      <mat-form-field  appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="userName">
+        <mat-error *ngIf="hasErrorRegister('userName', 'required')">UserName is required</mat-error>
+        <mat-error *ngIf="hasErrorRegister('userName', 'maxlength')">Maximum length must be 8 characters</mat-error>
+        <mat-icon matSuffix>account_box</mat-icon>
+      </mat-form-field>
+ 
+      <mat-form-field class="password-field"  appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" id="password" formControlName="password">
+        <mat-error *ngIf="hasErrorRegister('password', 'required')">Password is required</mat-error>
+        <mat-error *ngIf="hasErrorRegister('password', 'minlength')">Minimum length must be 6 characters</mat-error>
+        <mat-icon matSuffix (click)="showPass()" class="togglePassword">visibility</mat-icon>
+      </mat-form-field>
+
+    <!-- <button  class="btn btn-sm btn-danger" color="primary" 
+    mat-raised-button [disabled]="isSaving" 
+    (click)="onSubmitRegister($event)">REGISTER</button> -->
+
+        
+  <button class="btn btn-sm btn-danger" [disabled]="isSaving" 
+  mat-raised-button color="primary" (click)="onSubmitRegister($event)">
+    <ng-container *ngIf="!isSaving; else process"> REGISTER <mat-icon>login</mat-icon></ng-container>
+    <ng-template #process>
+      <span class="processing">SAVING...<mat-spinner diameter="15"></mat-spinner></span>
+    </ng-template>
+</button>
+
+  </div>
+    </form>
+
+
+       

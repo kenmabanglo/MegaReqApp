@@ -1,0 +1,180 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content>  
+   
+    <div id="app-status">
+        <app-status-steps [approvers]="approvers" [closed]="datas?.closed" [closer]="datas?.updatedByName"
+        ></app-status-steps>
+    </div>
+
+<div id="print-preview">
+    <div class="print-wrapper" [ngClass]="passedData.requestTypeCode"  fxLayout="column"> 
+
+        <section id="request-title" fxLayout="column" fxFlexAlign="center"> 
+            <h3>
+                Tarlac Mac Enterprises, Inc. - ({{datas?.branchCode}})<br>
+                Fund Liquidation Form
+            </h3> 
+        </section>
+
+        <section id="fl-header">
+            <table style="width: 100%;">
+                <tr>
+                    <th><h4>Liquidation Date:</h4></th>
+                    <td>{{ datas?.requestDate | date: 'shortDate' }}</td>
+                </tr>
+                <tr>
+                    <th><h4>For (Event / Activity Name):</h4></th>
+                    <td>{{ datas?.description }}</td>
+                </tr>
+                <tr>
+                    <th><h4>RFP/Reference No:</h4></th>
+                    <td colspan="3">{{ datas?.referenceRfp }}</td>
+                </tr>
+            </table>
+
+        </section>
+
+        <section id="form-items" fxLayout="column" fxFlex="100"> 
+            <table id="fl-table"  style="visibility: hidden;" *ngIf="datas">
+                <thead>
+                    <tr>    
+                        <th style="width: 50%;"></th>
+                        <th>Reference</th>
+                        <th>Amount</th> 
+                        <th>Extended Amount</th>
+                    </tr> 
+                </thead>
+                <tbody>
+                    <tr> 
+                        <th>Amount of Fund Received:</th>
+                        <td></td>
+                        <td></td>
+                        <th>{{datas?.extendedAmount | number: '1.0-2'}}</th>
+                    </tr>
+                    <tr> 
+                        <th>Less: Actual Expenses</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+                <tbody class="items"> 
+                  
+                    <ng-container *ngIf="datas" [hidden]="processing"> 
+                        <tr *ngFor="let item of datas.requestItems; let last = last; let i =index;" class="main-table" #requested>
+                            <!-- <td class="rowN"></td> -->
+                            <td class="td-description">{{i+1}}. {{ item.description }}</td>
+                            <td>{{ item.remarks }}</td>
+                            <td class="number">{{ item.price | number: '1.0-2'}}</td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+                
+                <tbody [show]="itemRows.length > 0  && !processing">
+                    <ng-container *ngIf="itemRows.length > 0">
+                        <tr *ngFor="let rows of itemRows; let i =  index;" class="empty-table">
+                            <!-- <td class="rowN"></td> -->
+                            <td class="td-description">{{datas.requestItems.length + i + 1}}.</td>
+                            <td></td>
+                            <td></td> 
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                </tbody> 
+                <tbody>
+                    <tr>
+                        <th>Amount for Return or Refund</th>
+                        <td></td>
+                        <td></td>
+                        <th>{{datas?.refundAmount | number: '1.0-2'}}</th>
+                    </tr>
+                </tbody>
+
+            </table>
+        </section>
+        
+        <section id="fl-footer">
+            <table>
+                <tr>
+                    <th><h4>Verified by:</h4></th>
+                </tr>
+                <tr>
+                    <td>
+                        <span>{{datas?.closed == "Y"? datas?.updatedByName :""}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th><span>Accounting Supervisor</span></th>
+                </tr>
+            </table>  
+            <table>
+                <tr>
+                    <th><h4>Prepared by:</h4></th>
+                </tr>
+                <tr>
+                    <td><span>{{ datas?.createdByName }}</span></td>
+                </tr>
+                <tr>
+                    <th><span>Requisioner</span></th>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th><h4>Noted by:</h4></th>
+                </tr>
+                <tr>
+                    <td><span>{{datas?.approved1 == 'Y' ? datas?.approvers.name1:''}}</span></td>
+                </tr>
+                <tr>
+                    <th><span>Immediate Head</span></th>  
+                </tr>
+            </table>
+            <div><small>(NOTE: Make sure that needed attachments are complete.)</small></div>          
+        </section>
+ 
+    </div> 
+</div>
+
+ 
+    
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <ng-container>
+        <button mat-raised-button color="warn" (click)="print()">
+            <mat-icon>print</mat-icon>
+            PRINT
+        </button>
+    </ng-container>
+
+    <ng-container>
+        <button mat-raised-button color="primary" (click)="viewAttachments()">
+            <mat-icon>attach_file</mat-icon>
+            ATTACHMENTS
+        </button>
+    </ng-container>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+
+   
+    
+</mat-dialog-actions>
+
+</div>

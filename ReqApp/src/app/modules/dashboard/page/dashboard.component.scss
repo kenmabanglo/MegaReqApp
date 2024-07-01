@@ -1,0 +1,90 @@
+#dashboard {
+    .dashboard-body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dashboard-footer {
+        width: 100%;
+    }
+    
+    .dashboard-footer button {
+        right: 20px;
+        position: fixed;
+        bottom: 60px;
+    }
+    .dashboard-body mat-card {
+        margin: 0 16px;
+    }
+
+    .quick-access {
+
+        h2 {
+            font-size: 1em;
+            margin-block-start: 0.1em;
+            margin-block-end: 0.1em;
+        }
+
+        mat-card-content {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: baseline;
+            align-content: flex-start;
+
+            & > div {
+                min-width: 200px; 
+                padding: 10px;
+                margin: 5px;
+                color: white;
+                flex: 1 1 auto;
+                text-align: center;
+                cursor: pointer;
+
+                & > mat-icon {
+                    font-size: 60px;
+                    height: 60px;
+                    width: 60px;
+                    line-height: 60px;
+                }
+
+            }
+            & > div:hover {
+                opacity: 0.8;
+            }
+            & > div:first-child {
+                background-color: #C62828;
+            }
+
+            & > div:nth-of-type(2) {
+                background-color: #283593;
+            }
+
+            & > div:nth-of-type(3) {
+                background-color: #00695C;
+            }
+
+            & > div:nth-of-type(4) {
+                background-color: #F9A825;
+            }
+
+            & > div:nth-of-type(5) {
+                background-color: #AD1457;
+            }
+
+            & > div:nth-of-type(6) {
+                background-color: #0277BD;
+            }
+
+            & > div:nth-of-type(7) {
+                background-color: #6A1B9A;
+            }
+
+            & > div:nth-of-type(8) {
+                background-color: #e91e63;
+            }
+        }
+        // https://materialui.co/colors/
+       
+    }
+}

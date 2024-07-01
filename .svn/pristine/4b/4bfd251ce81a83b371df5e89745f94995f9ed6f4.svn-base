@@ -1,0 +1,161 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <mat-dialog-content>  
+    
+        <div id="app-status">
+            <app-status-steps [approvers]="approvers"
+            ></app-status-steps>
+        </div>
+
+        <div id="print-preview">
+            <div class="print-wrapper" [ngClass]="passedData.requestTypeCode"  fxLayout="column"> 
+
+                <section id="company-details" fxLayout="row" fxFlex="100">
+                    <span class="logo-img" fxFlex="20"></span>
+                    <h3>{{ 'Tarlac MAC Enterprises Inc.' | uppercase }}</h3>
+                </section>
+                
+                <section id="request-title" fxFlex="row" fxLayoutAlign="flex-end flex-end" fxFlex="100">
+                    <h4 style="text-align: right">{{ datas?.requestNo }}<br><i>REQUEST FORM</i><br><small>(SUPPLIES)</small></h4> 
+                </section> 
+
+                <section id="formitems" fxLayout="column" fxFlex="100"> 
+
+                    <ng-container *ngIf="processing">
+                        <app-loading></app-loading>
+                    </ng-container> 
+
+                    <table class="table-bordered" *ngIf="!processing">
+                        <tr>
+                            <th>BRANCH/DEPARTMENT: {{datas?.branchCode }} </th>
+                            <th>DATE FILED: {{ datas?.requestDate | date: 'shortDate' }}</th> 
+                        </tr>
+                    </table>
+                    <table id="rfs-tb"  style="visibility: hidden;" *ngIf="datas">
+                        <thead>
+                            <tr> 
+                                <th>Description</th> 
+                                <th>Qty</th>
+                                <th>Unit Cost</th>
+                                <th>Amount</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody class="items">
+                            <!-- // to do loading spinner -->
+                            <ng-container *ngIf="datas" [hidden]="processing"> 
+                                <tr *ngFor="let item of datas.requestItems; let last = last; let i =index;" class="main-table" #requested>
+                                    <td class="td-description cell"><span class="ellipsis">{{ item.description }}</span></td>
+                                    <td class="quantity number">{{ item.quantity }}</td>
+                                    <td></td>
+                                    <td></td> 
+                                    <td [ngClass]="item.remarks != ''?'remarks':''" class="cell">
+                                        <span class="ellipsis">{{ item.remarks }}</span>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                        
+                        <tbody [show]="itemRows.length > 0  && !processing">
+                            <ng-container *ngIf="itemRows.length > 0">
+                                <tr *ngFor="let rows of itemRows; let i =  index;" class="empty-table">
+                                    <!-- <td>{{ rows }}</td> -->
+                                    <td class="td-description"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </ng-container>
+                        </tbody> 
+                        <!-- <tfoot>
+                            <tr>
+                                <td></td>
+                                <th colspan="2">ESTIMATED AMT.</th>
+                                <td class="number">{{ grand_total | number: '1.2-2'}}</td>
+                               <td class="number">{{datas?.extendedAmount | number: '1.2-2' }}</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+         -->
+                    </table>
+
+                    <div fxFlex="row" fxLayoutAlign="space-between" class="approvers">
+                        <table style="width: 50%" class="table-bordered">
+                            <tr>
+                                <td><sup>Requested by:</sup></td>
+                                <td><sup>Noted by:</sup><br> {{datas?.approved1 == 'Y' ? ((datas?.approvers.name1 | titlecase ) + ' (' + (datas?.approvedDate1 | date:'shortDate') + ')'):''}}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{datas?.createdByName }}
+                                </td>
+                                <td>
+                                    Supervisor/ Manager
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table style="width: 40%" class="table-bordered">
+                            <tr>
+                                <td><sup>Checked by:</sup><br></td>
+                                <td><sup>Approved by:</sup></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                Admin Manager
+                                </td>
+                                <td>
+                                    General Manager
+                                </td>
+                            </tr>
+                        </table>
+                        
+                    </div>
+                
+                </section>
+
+                <div fxFlex="row" fxLayoutAlign="center center">
+                    (Administration File)
+                </div>
+
+            </div> 
+        </div>
+    
+    </mat-dialog-content>
+
+    <mat-dialog-actions>
+
+        <ng-container>
+            <button mat-raised-button color="warn" (click)="print()">
+                <mat-icon>print</mat-icon>
+                PRINT
+            </button>
+        </ng-container>
+
+        <ng-container>
+            <button mat-raised-button color="primary" (click)="viewAttachments()">
+                <mat-icon>attach_file</mat-icon>
+                ATTACHMENTS
+            </button>
+        </ng-container>
+        
+        <button mat-raised-button class="text-warn" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+            CLOSE
+        </button>
+    
+    </mat-dialog-actions>
+
+</div>

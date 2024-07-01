@@ -1,0 +1,43 @@
+<h2 mat-dialog-title align="start">Change Password: User: ({{passedData?.userName}})</h2>
+<mat-divider></mat-divider>
+
+<mat-dialog-content>
+  <form class="normal-form" >
+
+    <div class="mat-form-field-container">
+        <form [formGroup]="changeForm" (ngSubmit)="onSubmit()">
+        <mat-form-field class="password-field">
+            <mat-label>New Password</mat-label>
+            <input matInput type="password" id="password" placeholder="Password" formControlName="npassword">
+            <mat-error *ngIf="hasError('npassword', 'required')">New Password is required</mat-error>
+            <mat-error *ngIf="hasError('npassword', 'minlength')">Minimum length must be 6 characters</mat-error>
+    
+            <mat-icon matSuffix (click)="showPass()" class="togglePassword" color="primary">visibility</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field class="password-field">
+            <mat-label>Confirm New Password</mat-label>
+            <input matInput type="password" id="cpassword" placeholder="Confirm Password" formControlName="cpassword">
+            <mat-error *ngIf="hasError('cpassword', 'required')">Confirm Password is required</mat-error>
+            <mat-error *ngIf="hasError('cpassword', 'mustMatch')">Passwords must match</mat-error>
+    
+            <mat-icon matSuffix (click)="showPass2()" class="togglePassword2" color="primary">visibility</mat-icon>
+          </mat-form-field>
+          </form>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-divider></mat-divider>
+<mat-dialog-actions style="justify-content: space-between !important;">
+    <div align="start">
+        <!-- <button mat-raised-button color="green" mat-dialog-close>Assign</button> -->
+    </div>
+    <div align="end">
+        <button mat-raised-button mat-dialog-close>CANCEL</button>
+        <button mat-raised-button type="submit" (click)="onSubmit()" [disabled]="changeForm.invalid" color="primary" >SAVE</button>
+    </div>
+</mat-dialog-actions>
+
+

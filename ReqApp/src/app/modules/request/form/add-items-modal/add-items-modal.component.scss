@@ -1,0 +1,81 @@
+#addItemForm {
+   
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+
+
+    & > div:empty {
+        display: none;
+    }
+    
+    div {
+        flex: 1 1 calc(50% - 10px);
+        margin-right: 5px;
+    }
+
+    div.description {
+        flex:100% !important
+    }
+
+   
+    
+    mat-form-field {
+        width: 100%;
+    }
+    .search-inline-field {
+        position: relative !important;
+        right: 0px !important;
+        height: 20px !important;
+        background: none !important;
+        color: grey !important;
+        box-shadow: none !important;
+    }
+    div.hidden {
+        display: none !important;
+    }
+
+    &.RS-item {
+        div.description{ order: 2 !important; } 
+        div.quantity { order: 3 !important; } 
+        div.status{ order: 4 !important; }
+        div.remarks { order: 5 !important; }
+        div.serialNo{ order: 6 !important; }
+        div.locationCode{ order: 7 !important; }
+        div.serialNo {flex: 100% !important}
+    }
+
+    &.RTO-item {
+        div.supplierCode {order: 1; }
+        div.description{ order: 2;  }
+        div.onhand { order: 3; }
+        div.quantity { order: 4; }
+        div.remarks { order: 5; }
+        div.price { order: 6; }
+        div.totalPrice {order: 7;}
+    }
+
+    &.RFS-item {
+        div.remarks {order:5}
+    }
+
+    &.RFB-item {
+       div.quantity{
+            flex: 100%!important;
+        }
+    }
+
+    &.ADB-item {
+        div.totalPrice {
+            order: 3;   
+        }
+    }
+}
+// ::ng-deep {
+//     .mat-form-field-appearance-outline .mat-form-field-infix {
+//         padding: 0.3em 0 0.3em 0 !important;
+//     }
+
+// }

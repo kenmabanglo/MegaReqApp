@@ -1,0 +1,43 @@
+<form class="login-form" [formGroup]="loginForm" autocomplete="off" novalidate (ngSubmit)="onLoginSubmit()">
+   
+  <div class="login-det">
+    
+    <mat-form-field appearance="fill">
+      <mat-label>Username</mat-label>
+      <input matInput type="text" formControlName="userName">
+      <mat-error *ngIf="hasErrorLogin('userName', 'required')">Username is required</mat-error>
+      <mat-icon matSuffix >perm_identity</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field class="password-field" appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" id="password" formControlName="password">
+      <mat-error *ngIf="hasErrorLogin('password', 'required')">Password is required</mat-error>
+   
+        <!-- <button mat-icon-button (click)="$event.preventDefault()" > -->
+          <mat-icon matSuffix (click)="showPass()" class="togglePassword" >
+            visibility
+          </mat-icon>
+        <!-- </button>  -->
+
+    </mat-form-field>
+
+
+      
+    <button class="btn btn-sm btn-danger" [disabled]="isSaving" 
+    mat-raised-button id="login-bt" color="primary">
+      <ng-container *ngIf="!isSaving; else process"> LOGIN <mat-icon>login</mat-icon></ng-container>
+      <ng-template #process>
+        <span class="processing">LOGGING IN..<mat-spinner diameter="15"></mat-spinner></span>
+      </ng-template>
+    </button>
+
+    <p class="forget">
+      <a href="">Forgot Password? Please Contact Support. <br>
+     
+      </a>
+    </p>
+
+  </div>
+
+</form>

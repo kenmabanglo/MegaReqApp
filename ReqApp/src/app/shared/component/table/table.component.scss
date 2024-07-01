@@ -1,0 +1,35 @@
+table {
+    width: 100%;
+  }
+  
+  th, td {
+    padding: 10px !important;
+  }
+  
+  mat-form-field {
+    width: 40%;
+  }
+  
+  .text-right {
+    text-align: right !important;
+  }
+  .mat-column-Actions {
+    width: 220px;
+    text-align: center;
+}
+
+.mat-column-Actions > button {
+  margin-right: 5px;
+  padding: 0 8px !important;
+  line-height: 30px;
+  text-align: center;
+}
+.mat-column-Name {
+  width: 33%;
+}
+.capitalize {
+  text-transform: lowercase !important;
+}
+.capitalize:first-letter, .capitalize::first-line {
+  text-transform: uppercase !important;
+}

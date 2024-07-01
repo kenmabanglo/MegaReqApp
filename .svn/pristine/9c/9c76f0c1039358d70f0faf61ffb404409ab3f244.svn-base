@@ -1,0 +1,10 @@
+<app-request-list-table
+[columns]="columns"
+[dataset]="dataset"
+(dataFilter)="initDataSource($event)"
+[pageType]="'viewer'"
+[accessTypes]="requestTypes"
+>
+</app-request-list-table>
+
+

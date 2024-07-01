@@ -1,0 +1,167 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <mat-dialog-content>  
+    
+        <div id="app-status">
+            <app-status-steps [approvers]="approvers" [closed]="datas?.closed" [closer]="datas?.updatedByName"
+            ></app-status-steps>
+        </div>
+
+        <div id="print-preview">
+            <div class="print-wrapper" [ngClass]="passedData.requestTypeCode"  fxLayout="column"> 
+
+                <section id="company-details" fxLayout="row" fxFlex="100">
+                    <span class="logo-img"></span>
+                    <h3>{{ 'Tarlac MAC Enterprises Inc.' | uppercase }}<br>
+                        REQUEST FORM<br><small>(MACHINERIES, TOOLS AND EQUIPMENT)</small></h3>
+                </section>
+                 
+                <section id="formitems" fxLayout="column" fxFlex="100"> 
+
+                    <ng-container *ngIf="processing">
+                        <app-loading></app-loading>
+                    </ng-container> 
+
+                    <table class="table-bordered" *ngIf="!processing">
+                        <tr>
+                            <th style="width: 120px;">Date Requested: </th>
+                            <th style="width: calc(50% - 120px);">{{ datas?.requestDate | date: 'shortDate' }}</th>
+                            <th style="width: 120px;">Date Required: </th>
+                            <th style="width: calc(50% - 120px);">{{ datas?.requestDate | date: 'shortDate' }}</th>
+                        </tr>
+                        <tr>
+                            <th>Assigned to: </th> 
+                            <th>{{ datas?.assignedTo }}</th>
+                            <th>Estimated Cost: </th> 
+                            <th>{{ datas.extendedAmount | number: '1.0-2' }}</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <mat-checkbox [checked]="datas?.rfatype == 'DEP'? true: false" disabled>
+                                    Dept./Section reqm't
+                                </mat-checkbox>
+                                <mat-checkbox [checked]="datas?.rfatype == 'CUST'? true: false" disabled>
+                                    Customer reqm't
+                                </mat-checkbox>
+                                <!-- <mat-checkbox [checked]="!['DEP','CUST'].includes(datas?.rfatype)? true: false" disabled> -->
+                                    <mat-checkbox [checked]="false" disabled>
+                                    Other 
+                                </mat-checkbox>
+                            </td>
+                        </tr>
+                    </table>
+                    <table id="rfa-tb"  style="visibility: hidden;" *ngIf="datas">
+                        <thead>
+                            <tr> 
+                                <th>Description</th> 
+                                <!-- <th>Barcode</th> -->
+                                <th>Serial</th>
+                                <th>Qty.</th> 
+                            </tr>
+                        </thead>
+                        <tbody class="items">
+                            <!-- // to do loading spinner -->
+                            <ng-container *ngIf="datas" [hidden]="processing"> 
+                                <tr *ngFor="let item of datas.requestItems; let last = last; let i =index;" class="main-table" #requested>
+                                    <td class="td-description">{{ item.description }}</td>
+                                    <td>{{ item.serialNo }}</td>
+                                    <td class="quantity number">{{ item.quantity }}</td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                        
+                        <tbody [show]="itemRows.length > 0  && !processing">
+                            <ng-container *ngIf="itemRows.length > 0">
+                                <tr *ngFor="let rows of itemRows; let i =  index;" class="empty-table">
+                                    <!-- <td>{{ rows }}</td> -->
+                                    <td class="td-description"></td>
+                                    <td></td>
+                                    <td></td> 
+                                </tr>
+                            </ng-container>
+                        </tbody> 
+                        <tfoot>
+                            <tr>
+                                <td>Purpose</td>
+                                <th></th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Benefits</td>
+                                <th></th>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+        
+                    </table>
+
+                    <div fxFlex="row" fxLayoutAlign="space-between" class="approvers">
+                        <table style="width: 100%" class="table-bordered">
+                            <tr>
+                                <td><sup>Requested by:</sup><br><span> {{datas?.createdByName }} </span></td>
+                                <td><sup>Noted by:</sup><br> <span>{{datas?.approved1 == 'Y' ? datas?.approvers.name1:''}}</span></td>
+                                <td><sup>Checked by:</sup><br></td>
+                                <td><sup>Approved by:</sup></td>
+                                <td><sup>Received by:</sup></td>
+                            </tr>
+                            <tr>
+                                <td>  </td>
+                                <td> Supervisor/ manager </td>
+                                <td> Admin Manager </td>
+                                <td> General Manager</td>
+                                <td></td>
+                            </tr>
+                        </table>  
+                        
+                    </div>
+                
+                </section>
+
+                <div fxFlex="row" fxLayoutAlign="center center" id="copy-admin"  style="visibility: hidden !important;">
+                    (Admin File)
+                </div>
+
+                <div fxFlex="row" fxLayoutAlign="center center" id="copy-requesitioner" style="visibility: hidden !important;">
+                    (Requesitioner File)
+                </div>
+
+            </div> 
+        </div>
+    
+    </mat-dialog-content>
+
+    <mat-dialog-actions>
+
+        <ng-container>
+            <button mat-raised-button color="warn" (click)="print()">
+                <mat-icon>print</mat-icon>
+                PRINT
+            </button>
+        </ng-container>
+
+        <ng-container>
+            <button mat-raised-button color="primary" (click)="viewAttachments()">
+                <mat-icon>attach_file</mat-icon>
+                ATTACHMENTS
+            </button>
+        </ng-container>
+        
+        <button mat-raised-button class="text-warn" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+            CLOSE
+        </button>
+    
+    </mat-dialog-actions>
+
+</div>

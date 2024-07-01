@@ -1,0 +1,37 @@
+<mat-sidenav-container fxFlex fxFlexFill  class="mat-drawer-container mat-sidenav-container mat-drawer-transition">
+   
+  <mat-sidenav #sidenav fixedInViewport (click)="sidenav.toggle"
+  [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+  [mode]="(isHandset$ | async) ? 'over' : 'side'"
+  [opened]="!(isHandset$ | async)"
+  class="sidenav-container sidebar-dark mat-elevation-z8"  >
+
+  <app-sidenav></app-sidenav>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <app-header [sidenav]="sidenav"></app-header>
+    <section class="body" [class.dashboard]="dashboardOutlet">
+
+      <router-outlet name="dashboard" (activate)="onActivate($event)"
+      (deactivate)="onDeactivate($event)"></router-outlet>
+
+      <div fxFlex="100" *ngIf="!dashboardOutlet">
+        <mat-card  fxFlexAlign="stretch" stretch>
+          <mat-card-title [ngClass]="(isHandset$ | async) ? '' : 'panel blue-panel'">
+            <mat-icon *ngIf="title_icon != ''">{{ title_icon }}</mat-icon> {{ title }}
+          </mat-card-title>
+          <mat-card-content>
+            <router-outlet></router-outlet>
+          </mat-card-content>  
+        </mat-card>
+      </div>
+
+    </section>
+
+    <app-footer *ngIf="dashboardOutlet"></app-footer>
+
+  </mat-sidenav-content>
+      
+</mat-sidenav-container>

@@ -1,0 +1,77 @@
+
+<div id="dashboard">
+    <div class="dashboard-body"> 
+   
+<div class="quick-access">
+    
+    <mat-toolbar >
+        <span>Quick Access</span>
+    </mat-toolbar>
+
+    <mat-card>
+        <mat-card-content>
+            <div routerLink="/request/form-entry">
+                <mat-icon>format_list_bulleted</mat-icon>
+                <h2>Create Request</h2>
+            </div>
+
+            <div routerLink="/request/request-history">
+                <mat-icon>format_list_numbered</mat-icon>
+                <h2>View All Request</h2>
+            </div>
+            
+            <!-- for approvers -->
+            <ng-container *ngIf="user.approver == 1">
+              
+                <div routerLink="/approver/approval-monitoring">
+                    <mat-icon>check_circle</mat-icon>
+                    <!-- <span>{{ totalPending }}</span> -->
+                    <h2>For Approvals</h2>
+                </div>
+
+                <div routerLink="/approver/approval-history">
+                    <mat-icon>format_list_numbered_rtl</mat-icon>
+                    <h2>Approved History</h2>
+                </div>
+
+                <div routerLink="/approver/rejected-history">
+                    <mat-icon>block</mat-icon>
+                    <h2>Rejected History</h2>
+                </div>
+ 
+            </ng-container> 
+
+            <div routerLink="/viewer/approved" *ngIf="viewer">
+                <mat-icon>format_list_numbered_rtl</mat-icon>
+                <h2>View Approved</h2>
+            </div>
+
+            <div routerLink="/master/user-profile" *ngIf="user.role == 'Admin'">
+                <mat-icon>account_circle</mat-icon>
+                <h2>My Profile</h2>
+            </div>
+
+
+            <div routerLink="/master/user-list" *ngIf="user.role == 'Admin'">
+                <mat-icon>assignment_ind</mat-icon>
+                <h2>User Master</h2>
+            </div>
+
+        </mat-card-content>
+    </mat-card>
+        
+</div>
+
+<div class="dashboard-footer">
+
+    <button
+        mat-mini-fab
+        color="primary"
+        matTooltip="Create Request"
+        routerLink="/request/form-entry"
+    >
+        <mat-icon>add</mat-icon>
+    </button>
+
+</div>
+</div>

@@ -1,0 +1,153 @@
+<div class="modal-container">
+    
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title>
+            <span>{{ passedData.title }}</span>
+            (No. {{passedData.requestNo}})
+        </h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+<mat-dialog-content>  
+   
+    <div id="app-status">
+        <app-status-steps [approvers]="approvers" [closed]="datas?.closed" [closer]="datas?.updatedByName"
+        ></app-status-steps>
+    </div>
+
+    <div id="print-preview" class="rto-preview">
+        <div class="print-wrapper"> 
+
+        <section id="request-title"> 
+            <h1>REQUEST TO ORDER FORM</h1>
+            <h4 class="req-no">
+                <span>N</span>
+                <span>&#7885;</span> 
+                <span> {{ datas?.requestNo }}</span>
+            </h4>
+        </section> 
+
+        <section id="rto-table">
+            <ng-container *ngIf="processing">
+                <app-loading></app-loading>
+            </ng-container> 
+
+            <table id="rto-tb" style="visibility: hidden;">
+                <thead>
+                    <tr> 
+                        <th>SUPPLIER</th>
+                        <th>MODEL</th>
+                        <th>INVENTORY ON HAND</th>
+                        <th>REQUEST QTY</th>
+                        <th>REMARKS</th>
+                        <th>UNIT PRICE</th>
+                        <th>TOTAL AMOUNT</th>
+                    </tr>
+                </thead>
+                
+                <tbody class="items">
+                 
+                    <ng-container *ngIf="datas" [hidden]="processing"> 
+                        <tr *ngFor="let item of datas.requestItems; let last = last; let i =index;" class="main-table" #requested>
+                            <td class="td-supplier">{{ item.supplierName }}</td>
+                            <td class="td-description">
+                            {{ item.description }}
+                            </td>
+                            <td>{{ item.onhand }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td [ngClass]="item.remarks != ''?'remarks':''">{{ item.remarks }}</td>
+                            <td>{{ item.price |  number: '1.2-2' }}</td>
+                            <td>{{ item.totalPrice |  number: '1.2-2'  }}</td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+                
+                <tbody [show]="itemRows.length > 0  && !processing">
+                    <ng-container *ngIf="itemRows.length > 0">
+                        <tr *ngFor="let rows of itemRows; let i =  index;" class="empty-table">
+                            <!-- <td>{{ rows }}</td> -->
+                            <td></td>
+                            <td class="td-description"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                </tbody> 
+                <tfoot>
+                    <tr>
+                        <th colspan="6">Grand Total</th>
+                        <th></th>
+                        <!-- <th>{{grand_total |  number: '1.2-2' }}</th> -->
+                    </tr>
+                </tfoot>
+            </table>
+    
+        </section>
+
+        <section id="rto-approvers">
+            <div>
+                <h4>Requested By:</h4>
+                <span class="sign">{{datas?.createdByName  | titlecase}}</span>
+                <small>Signature over printed name</small>
+            </div>
+            
+            <div>
+                <h4>Noted By:</h4>
+                <span class="sign">{{ datas?.approved1 == 'Y'?  datas?.approvers.name1:'' | titlecase}}</span>
+                <small>Store Manager/Supervisor</small>
+            </div>
+            <div>
+                <h4>Approved By:</h4>
+                <span class="sign">{{ datas?.approved2 == 'Y'? datas?.approvers.name2:'' | titlecase}}</span>
+                <span></span>
+            </div> 
+        </section>
+
+        </div>
+    </div>
+
+   
+    
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <ng-container *ngIf="user?.positionName.trim() == 'District Manager'"  routerLink="/request/form-entry">
+        <button mat-raised-button color="accent">
+            <mat-icon>edit</mat-icon>
+            EDIT
+        </button>
+    </ng-container> 
+
+    <ng-container>
+        <button mat-raised-button color="warn" (click)="print()">
+            <mat-icon>print</mat-icon>
+            PRINT
+        </button>
+    </ng-container>
+
+    <ng-container>
+        <button mat-raised-button color="primary" (click)="viewAttachments()">
+            <mat-icon>attach_file</mat-icon>
+            ATTACHMENTS
+        </button>
+    </ng-container>
+    
+    <button mat-raised-button class="text-warn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+        CLOSE
+    </button>
+
+   
+    
+</mat-dialog-actions>
+
+</div>
+
+

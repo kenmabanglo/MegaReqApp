@@ -1,0 +1,68 @@
+<form [formGroup]="userForm" >
+ <!-- column pic upload --> 
+    <app-upload
+      [initials]="initials"
+      [imgSrc]="img"
+      [fullName]="fname"
+      (imageData)="uploadFinished($event)"
+      >
+    </app-upload>   
+
+  <div *ngIf="uploading">
+    <span class="progress">{{progress}}%</span>
+    <mat-progress-bar  mode="determinate" value="{{progress}}"></mat-progress-bar>
+  </div>
+ 
+  <!-- column fields -->
+  <div class="flex-auto">
+    <mat-form-field appearance="fill">
+      <mat-label>Username</mat-label>
+      <input matInput value="{{userName}}" readonly>
+    </mat-form-field>
+    
+    <mat-form-field appearance="fill">
+      <mat-label>Branch</mat-label>
+      <input matInput value="{{branch}}">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="firstName">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="lastName">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Position Name</mat-label>
+      <input matInput formControlName="positionName" readonly>
+    </mat-form-field>
+   
+  </div>
+
+  <button mat-flat-button (click)="changePassword(userName)" color="warn">
+    <mat-icon>key</mat-icon> Change Password
+  </button>
+  
+</form>
+
+<!-- <article class="container">
+  <section class="create" *ngIf="isCreate">
+    <h1>Create User</h1>
+    <form>
+
+      <app-upload (onUploadFinished)="uploadFinished($event)"></app-upload>
+      <div class="row">
+        <div class="offset-md-5 col-md-2">
+          <button type="button" class="btn btn-primary" (click)="onCreate()">Create </button>
+        </div>
+      </div>
+
+      <div *ngIf="imgSrc">
+        <img src="{{imgSrc}}" style="width: 200px;height:200px;">
+      </div>
+
+    </form>
+  </section>
+ 
+</article> -->

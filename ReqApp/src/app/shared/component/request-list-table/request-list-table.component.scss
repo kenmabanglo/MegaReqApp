@@ -1,0 +1,144 @@
+table {width:100%}
+.approval-container {    
+    .approve-bt {
+      color: rgb(0, 124, 50);
+    }
+}  
+
+.mat-table-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+ 
+  .mobile-label {
+    display: none;
+  }
+  mat-cell.mat-column-actions {
+    justify-content: center;
+    width: 100%; 
+    align-items: center; 
+    flex-direction: row;
+    padding-right: 0 !important;
+  }
+  mat-cell button {
+    margin-right:5px; 
+    // font-size: 12px;
+    padding: 0 5px !important;
+    min-width: 25px !important;
+    // flex: 1 1 auto;
+    width: calc(100% / 3);
+
+    mat-icon {
+      height: 15px !important;
+      width: 15px !important;
+      font-size: 15px !important;
+    }
+
+    .mobile-label {
+      width: fit-content !important;
+      padding-left:5px
+    }
+  }
+
+
+
+  @media(max-width: 767px) {
+    mat-cell:first-of-type {
+      padding-left: 0 !important;
+    }
+    .mobile-label {
+      width: 110px;
+      display: inline-block;
+      font-weight: bold;
+    }
+    mat-cell.mat-column-actions {
+      justify-content: flex-end;
+    }
+    .mat-header-row {
+      display: none;
+    }
+
+    .mat-row { 
+      flex-direction: column;
+      align-items: start;
+      padding: 8px 24px;
+      min-height: 30px !important;
+    }
+  }
+}
+
+div#list-filter-section {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: baseline;
+  width: 100%;
+
+  & > div {
+    flex: 1 1 auto;
+  }
+
+  .col1 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline
+  }
+
+  .col1.col-filters > * {
+    margin-right: 10px;
+  }
+
+  .col2.col-search {
+    width: 300px;
+
+    .search-field {
+      width: 100%;
+    }
+  }
+
+  @media(min-width: 768px) {
+    .show-mobile {
+      display: none;
+    }
+
+    .hide-mobile {
+      display: inline-block;
+    }
+  }
+
+  @media(max-width: 767px) {
+    div#list-filter-section {
+      flex-direction: column-reverse !important;
+    }
+    .col1.col-filters > * {
+      flex: 1 1 auto;
+    }
+    .col1.col-filters > button {
+      margin-top: -10px;
+      margin-bottom: 15px;
+    }
+    .show-mobile {
+      display: inline-block;
+    }
+
+    .hide-mobile {
+      display: none;
+    }
+
+    .col2.col-search, .filter-request-type {
+      width: 100% !important;
+    } 
+
+    mat-cell.mat-column-actions {
+      flex: 1 1 auto !important;
+      width: 100% !important;
+
+      button {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}

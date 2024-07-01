@@ -1,0 +1,57 @@
+<div class="modal-container">
+
+    <div class="mat-dialog-header">
+        <h2 mat-dialog-title align="start">Activate User: {{passedData?.userName}}</h2>
+
+        <button mat-icon-button class="close-modal" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+          </button>
+    </div>    
+
+    <mat-dialog-content  class="mat-typography">
+    <form [formGroup]="tbForm">
+
+        <mat-form-field floatLabel="always" appearance="fill" class="full-width">
+            <mat-label>Name</mat-label>
+           <input type="text" matInput readonly="" [value]="passedData.fullName">
+        </mat-form-field>
+        
+        <mat-form-field floatLabel="always" appearance="fill" class="full-width">
+            <mat-label>Position Name</mat-label>
+           <input type="text" matInput readonly="" [value]="passedData.positionName">
+        </mat-form-field>
+    
+            <mat-form-field floatLabel="always" appearance="outline" class="full-width">
+                <mat-label>Position Rank</mat-label>
+                <mat-select formControlName="positionRank">
+                    <mat-option value=''>Select Position Rank</mat-option>
+                    <mat-option value='no-rank'>No Rank</mat-option>
+                    <mat-option *ngFor="let c of passedData.positionRanks; " [value]="c">
+                    {{c}}
+                    </mat-option>
+                </mat-select>  
+            </mat-form-field>
+
+            <div class="full-width">
+                <mat-slide-toggle formControlName="storeBased" color="primary">Store Based ({{tbForm.controls['storeBased'].value?'Y':'N'}})</mat-slide-toggle>
+                <br>
+            </div>
+            
+
+    </form>
+    </mat-dialog-content>
+ 
+    <mat-dialog-actions align="end"> 
+        <button mat-raised-button color="warn" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+            CANCEL
+          </button>
+          <button mat-raised-button color="primary" (click)="onSubmit()">
+            <mat-icon>check_circle</mat-icon>
+            SELECT
+        </button>
+        
+    </mat-dialog-actions>
+
+</div>
+

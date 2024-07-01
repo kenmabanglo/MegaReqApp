@@ -1,0 +1,57 @@
+.auth-label {
+    margin: 1em auto;
+}
+
+.login-form {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 310px;
+    flex-wrap: wrap;
+    margin-top: 1em;
+    align-content: flex-start;
+    flex-direction: row;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+    justify-content: center;
+    align-items: center;
+    height: 310px;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 1em;
+}
+
+mat-form-field, mat-checkbox {
+    width: 100%; 
+    flex: 1 1 100%;
+}
+
+form.register-form {
+    height: 310px;
+}
+
+.auth-button {
+    display: block;
+    width: 100%;
+    margin-top: auto;
+    border-radius: 50px;
+}
+
+@media screen and (max-width: 500px) {
+    mat-card {
+      width: 300px !important;
+    }
+}
+ 
+mat-form-field#password-field .mat-form-field-infix {
+    display: flex !important;
+    justify-content: space-between !important;
+}
+
+.togglePassword {
+    cursor: pointer;
+}

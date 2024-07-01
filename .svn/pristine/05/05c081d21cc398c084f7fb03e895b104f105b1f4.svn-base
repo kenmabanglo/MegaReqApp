@@ -1,0 +1,28 @@
+ ::ng-deep .mat-horizontal-stepper-header {
+    pointer-events: none !important;
+    flex-wrap: wrap !important;
+
+    .mat-step-icon.mat-step-icon-state-pending {
+        background-color: #3f51b5 !important;
+    }
+
+    .mat-step-icon.mat-step-icon-state-approved {
+        background-color: var(--accent) !important;
+    }
+
+    .mat-step-icon.mat-step-icon-state-closed {
+        background-color: var(--warn) !important;
+    }
+
+    .mat-step-icon.mat-step-icon-state-rejected {
+        background-color: var(--warn) !important;
+    }
+
+    .mat-step-label {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #000000de !important;
+        overflow: unset !important;
+        white-space: normal !important;
+    }
+} 
